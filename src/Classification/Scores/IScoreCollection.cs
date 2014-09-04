@@ -6,8 +6,15 @@ namespace widemeadows.MachineLearning.Classification.Scores
     /// Interface IScoreCollection
     /// </summary>
     /// <typeparam name="TScore">The type of the t score.</typeparam>
-    public interface IScoreCollection<TScore> : IProducerConsumerCollection<TScore>, IScoreEnumeration<TScore> 
+    public interface IScoreCollection<TScore> : IProducerConsumerCollection<TScore>, IScoreEnumeration<TScore>
         where TScore: IScore
+    {
+    }
+
+    /// <summary>
+    /// Interface IScoreCollection
+    /// </summary>
+    public interface IScoreCollection : IScoreCollection<IScore>
     {
     }
 }

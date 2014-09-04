@@ -42,6 +42,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
+    <Compile Include="Classifiers\IClassifier.cs" />
+    <Compile Include="Labels\ILabel.cs" />
+    <Compile Include="Labels\INamedLabel.cs" />
+    <Compile Include="Labels\LabelBase.cs" />
+    <Compile Include="Labels\NamedLabelRegistry.cs" />
+    <Compile Include="Labels\LabelRegistry.cs" />
+    <Compile Include="Labels\NamedLabel.cs" />
+    <Compile Include="Observations\BoundaryObservation.cs" />
+    <Compile Include="Observations\BoundaryType.cs" />
+    <Compile Include="Observations\IObservationSequence.cs" />
+    <Compile Include="Observations\ObservationSequence.cs" />
+    <Compile Include="Observations\ObservationSequenceExtensions.cs" />
+    <Compile Include="Observations\StringObservationExtensions.cs" />
+    <Compile Include="Observations\StringObservationRegistry.cs" />
+    <Compile Include="Observations\ObservationRegistry.cs" />
+    <Compile Include="Registry.cs" />
     <Compile Include="Scores\ILikelihood.cs" />
     <Compile Include="Scores\IProbability.cs" />
     <Compile Include="Scores\IScoreEnumeration.cs" />
@@ -57,6 +74,15 @@
     <Compile Include="Scores\ScoreBase.cs" />
     <Compile Include="Scores\ScoreCollection.cs" />
     <Compile Include="Scores\TrackingScoreCollection.cs" />
+    <Compile Include="Observations\IObservation.cs" />
+    <Compile Include="Observations\IStringObservation.cs" />
+    <Compile Include="Observations\ObservationBase.cs" />
+    <Compile Include="Observations\StringObservation.cs" />
+    <Compile Include="Training\Document.cs" />
+    <Compile Include="Training\IDictionary.cs" />
+    <Compile Include="Training\IDocument.cs" />
+    <Compile Include="Training\ITrainingCorpus.cs" />
+    <Compile Include="Training\TrainingCorpus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
