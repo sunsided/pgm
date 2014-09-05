@@ -30,13 +30,26 @@ namespace widemeadows.MachineLearning.Classification
             _readOnlyCollection = new Lazy<ReadOnlyCollection<T>>(() => _entries.AsReadOnly());
         }
 
-            /// <summary>
+        /// <summary>
         /// Adds the specified entry.
         /// </summary>
         /// <param name="entry">The entry.</param>
         /// <returns>T.</returns>
         [NotNull]
         public T Add([NotNull] T entry)
+        {
+            _entries.Add(entry);
+            return entry;
+        }
+
+        /// <summary>
+        /// Adds the specified entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        /// <returns>T.</returns>
+        [NotNull]
+        public TDerived Add<TDerived>([NotNull] TDerived entry)
+            where TDerived: T
         {
             _entries.Add(entry);
             return entry;

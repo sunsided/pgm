@@ -8,4 +8,11 @@
         where T: ILabel
     {
     }
+
+    /// <summary>
+    /// Class LabelRegistry.
+    /// </summary>
+    public sealed class LabelRegistry : LabelRegistry<ILabel>
+    {
+    }
 }

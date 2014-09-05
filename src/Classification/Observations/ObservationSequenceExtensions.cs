@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace widemeadows.MachineLearning.Classification.Observations
@@ -47,6 +48,18 @@ namespace widemeadows.MachineLearning.Classification.Observations
             {
                 yield return new BoundaryObservation(BoundaryType.SequenceEnd);
             }
+        }
+
+        /// <summary>
+        /// Counts the specified sequence.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns>System.Int32.</returns>
+        public static int Count([NotNull] this IObservationSequence sequence)
+        {
+            var observationSequence = sequence as ObservationSequence;
+            if (observationSequence != null) return observationSequence.Length;
+            return ((IEnumerable<IObservation>) sequence).Count();
         }
     }
 }

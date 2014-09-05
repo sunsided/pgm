@@ -27,6 +27,6 @@ namespace widemeadows.MachineLearning.Classification.Training
         /// all possible (distinct) observations.
         /// </summary>
         /// <value>The size.</value>
-        long Size { get; }
+        long VocabularySize { get; }
     }
 }

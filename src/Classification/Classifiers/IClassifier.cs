@@ -7,7 +7,8 @@ namespace widemeadows.MachineLearning.Classification.Classifiers
     /// <summary>
     /// Interface IClassifier
     /// </summary>
-    public interface IClassifier
+    public interface IClassifier<out TScoreCollection>
+        where TScoreCollection: IScoreCollection
     {
         /// <summary>
         /// Classifies the specified observations.
@@ -15,6 +16,6 @@ namespace widemeadows.MachineLearning.Classification.Classifiers
         /// <param name="observations">The observations.</param>
         /// <returns>IScoreCollection{`0}.</returns>
         [NotNull]
-        IScoreCollection Classify([NotNull] IObservationSequence observations);
+        TScoreCollection Classify([NotNull] IObservationSequence observations);
     }
 }

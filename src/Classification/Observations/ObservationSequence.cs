@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using JetBrains.Annotations;
 
 namespace widemeadows.MachineLearning.Classification.Observations
@@ -7,6 +8,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
     /// <summary>
     /// Class ObservationSequence.
     /// </summary>
+    [DebuggerDisplay("Observation sequence of length {Length}")]
     public sealed class ObservationSequence : IObservationSequence
     {
         /// <summary>
@@ -50,10 +52,19 @@ namespace widemeadows.MachineLearning.Classification.Observations
         }
 
         /// <summary>
-        /// Gets the count.
+        /// Counts this instance.
         /// </summary>
-        /// <value>The count.</value>
-        public int Count
+        /// <returns>System.Int32.</returns>
+        public int Count()
+        {
+            return Length;
+        }
+
+        /// <summary>
+        /// Gets the sequence length.
+        /// </summary>
+        /// <value>The length.</value>
+        public int Length
         {
             get { return _sequence.Count; }
         }

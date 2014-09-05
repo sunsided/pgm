@@ -70,7 +70,7 @@ namespace widemeadows.MachineLearning.Classification.Training
         public double GetProbability(IObservation observation, double alpha)
         {
             var frequency = GetFrequency(observation);
-            var vocabularySize = Dictionary.Size;
+            var vocabularySize = Dictionary.VocabularySize;
             return (frequency + alpha) / (alpha * vocabularySize + Length);
         }
 

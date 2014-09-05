@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
@@ -19,11 +23,16 @@ namespace widemeadows.MachineLearning.Classification.Training
         private readonly ConcurrentBag<IDocument> _documents = new ConcurrentBag<IDocument>();
 
         /// <summary>
+        /// The vocabulary size
+        /// </summary>
+        private long _vocabularySize;
+
+        /// <summary>
         /// Gets the size of the dictionary, i.e. the total count of
         /// all possible (distinct) observations.
         /// </summary>
         /// <value>The size.</value>
-        public long Size { get { throw new NotImplementedException(); } }
+        public long VocabularySize { [Pure] get { return _vocabularySize; } }
 
         /// <summary>
         /// Gets the document count.
@@ -76,7 +85,44 @@ namespace widemeadows.MachineLearning.Classification.Training
         {
             var document = new Document(this, sequence);
             _documents.Add(document);
+            IncrementVocabularyCountBy(document.Length);
             return document;
+        }
+
+        /// <summary>
+        /// Increments the vocabulary count by the given <paramref name="length"/>.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        private void IncrementVocabularyCountBy(int length)
+        {
+            Interlocked.Add(ref _vocabularySize, length);
+            
+            /*
+            long value;
+            do
+            {
+                value = Interlocked.CompareExchange(ref _vocabularySize, 0, 0);
+            } while (value != Interlocked.CompareExchange(ref _vocabularySize, value + length, value));
+            */
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        public IEnumerator<ILabeledDocument> GetEnumerator()
+        {
+            var label = Label;
+            return _documents.Select(doc => new LabeledDocument(label, doc)).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) _documents).GetEnumerator();
         }
     }
 }
