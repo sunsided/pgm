@@ -27,15 +27,15 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <summary>
         /// The observation probabilities per document
         /// </summary>
-        private Dictionary<LabeledObservationKey, JointProbabilityOL> _jointProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointProbabilityOL>();
+        private Dictionary<LabeledObservationKey, JointLogProbabilityOL> _jointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
         /// </summary>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public OptimizedNaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
-            : base(priorResolver, evidenceCombiner)
+        public OptimizedNaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner, [NotNull] IProbabilityCalculator probabilityCalculator)
+            : base(priorResolver, evidenceCombiner, probabilityCalculator)
         {
         }
 
@@ -57,7 +57,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             var observationLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, ConditionalLogProbabilityOL>(capacity: observationCount);
 
             // the (summed) probabilities log P(o|l) of an observation given the label
-            var jointProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointProbabilityOL>(capacity: classCount * observationCount);
+            var JointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>(capacity: classCount * observationCount);
 
             // iterate over all possible classes
             foreach (var corpus in trainingCorpora)
@@ -97,15 +97,14 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                     var jointLogProbability = logProbability + prior;
 
                     // add the probability
-                    var probability = jointLogProbability.ToJointProbability();
-                    jointProbabilitiesPerLabel.Add(key, probability);
+                    JointLogProbabilitiesPerLabel.Add(key, jointLogProbability);
                 }
             }
 
             // swap references
-            _jointProbabilitiesPerLabel = jointProbabilitiesPerLabel;
+            _jointLogProbabilitiesPerLabel = JointLogProbabilitiesPerLabel;
         }
-
+        
         /// <summary>
         /// Determines all observations in all documents.
         /// </summary>
@@ -137,15 +136,15 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <returns>ILikelihood.</returns>
         protected override JointProbabilityOL GetJointProbabilityGivenObservation(IObservation observation, ILabel label, IEnumerable<ILabeledDocument> documents)
         {
-            var lookup = _jointProbabilitiesPerLabel;
+            var lookup = _jointLogProbabilitiesPerLabel;
 
             // lookup the probability
             var key = new LabeledObservationKey(label, observation);
-            JointProbabilityOL probability;
-            if (lookup.TryGetValue(key, out probability)) return probability;
+            JointLogProbabilityOL logProbability;
+            if (lookup.TryGetValue(key, out logProbability)) return logProbability.ToJointProbability();
 
             // that's a mismatch, so get funky using math
-            probability = GetJointProbabilityGivenObservationUncached(observation, label, documents);
+            var probability = GetJointProbabilityGivenObservationUncached(observation, label, documents);
             return probability;
         }
 

@@ -17,16 +17,16 @@ namespace widemeadows.MachineLearning.Classification.Training
         ILabel Label { get; }
 
         /// <summary>
-        /// Gets the size of the dictionary, i.e. the total count of
-        /// all possible (distinct) observations.
-        /// </summary>
-        /// <value>The size.</value>
-        long VocabularySize { [Pure] get; }
-
-        /// <summary>
         /// Gets the document count.
         /// </summary>
         /// <value>The document count.</value>
         long DocumentCount { [Pure] get; }
+
+        /// <summary>
+        /// Gets the total length of the corpus, i.e. the count of
+        /// all (non distinct) observations.
+        /// </summary>
+        /// <value>The size.</value>
+        long TotalDocumentLength { [Pure] get; }
     }
 }

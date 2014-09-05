@@ -35,16 +35,23 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// </summary>
         [NotNull]
         protected readonly IEvidenceCombinerFactory EvidenceCombiner;
-        
+
+        /// <summary>
+        /// The probability calculator
+        /// </summary>
+        protected readonly IProbabilityCalculator ProbabilityCalculator;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
         /// </summary>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public NaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
+        /// <param name="probabilityCalculator">The probability calculator.</param>
+        public NaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner, [NotNull] IProbabilityCalculator probabilityCalculator)
         {
             PriorResolver = priorResolver;
             EvidenceCombiner = evidenceCombiner;
+            ProbabilityCalculator = probabilityCalculator;
         }
 
         /// <summary>
@@ -172,7 +179,10 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         [NotNull]
         protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IDocument document)
         {
-            var p = document.GetProbability(observation, LaplaceSmoothing);
+            var frequency = document.GetFrequency(observation);
+            var documentLength = document.Length;
+
+            var p = ProbabilityCalculator.GetProbability(frequency, documentLength, LaplaceSmoothing);
             return new ConditionalProbabilityOL(p, observation, label);
         }
 

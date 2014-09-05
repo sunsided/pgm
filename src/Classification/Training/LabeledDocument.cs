@@ -69,30 +69,6 @@ namespace widemeadows.MachineLearning.Classification.Training
         }
 
         /// <summary>
-        /// Gets the empirical probability that the <paramref name="observation" /> can be found in the document.
-        /// </summary>
-        /// <param name="observation">The observation.</param>
-        /// <returns>System.Double.</returns>
-        public double GetProbability(IObservation observation)
-        {
-            return _document.GetProbability(observation);
-        }
-
-        /// <summary>
-        /// Gets the empirical probability that the <paramref name="observation" /> can be found in the document.
-        /// <para>
-        /// Laplace smoothing is applied with the strength <paramref name="alpha" />.
-        /// </para>
-        /// </summary>
-        /// <param name="observation">The observation.</param>
-        /// <param name="alpha">The alpha.</param>
-        /// <returns>System.Double.</returns>
-        public double GetProbability(IObservation observation, double alpha)
-        {
-            return _document.GetProbability(observation, alpha);
-        }
-
-        /// <summary>
         /// Gets the number of observations in the document.
         /// </summary>
         /// <value>The count.</value>

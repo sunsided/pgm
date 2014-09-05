@@ -3,6 +3,7 @@ using FluentAssertions;
 using widemeadows.MachineLearning.Classification.Classifiers.Bayes;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
+using widemeadows.MachineLearning.Classification.Scores;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners;
 using widemeadows.MachineLearning.Classification.Training;
 
@@ -42,9 +43,10 @@ namespace widemeadows.MachineLearning.Test
 
             var priorResolver = labels.GetEqualDistribution();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
+            var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora
-            var classifier = new NaiveBayesClassifier(priorResolver, evidenceCombinerFactory).TrainedWith(corpora);
+            var classifier = new OptimizedNaiveBayesClassifier(priorResolver, evidenceCombinerFactory, probabilityCalculator).TrainedWith(corpora);
 
             var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
             var bestResult = results.BestScore;
@@ -73,19 +75,20 @@ namespace widemeadows.MachineLearning.Test
             var labels = new NamedLabelRegistry();
             var corpora = new CorpusRegistry();
 
-            var corpus = corpora.Add(new TrainingCorpus(labels.Add("Left Half")));
+            var corpus = corpora.Add(labels.Add("Left Half"));
             corpus.AddSequence("left".ToObservationSequence(BoundaryMode.NoBoundaries));
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
-            corpus = corpora.Add(new TrainingCorpus(labels.Add("Right Half")));
+            corpus = corpora.Add(labels.Add("Right Half"));
             corpus.AddSequence("right".ToObservationSequence(BoundaryMode.NoBoundaries));
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
             var priorResolver = labels.GetEqualDistribution();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
+            var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora
-            var classifier = new OptimizedNaiveBayesClassifier(priorResolver, evidenceCombinerFactory);
+            var classifier = new OptimizedNaiveBayesClassifier(priorResolver, evidenceCombinerFactory, probabilityCalculator);
             classifier.Learn(corpora);
 
             // test the left side

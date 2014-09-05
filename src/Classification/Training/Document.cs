@@ -14,13 +14,6 @@ namespace widemeadows.MachineLearning.Classification.Training
     public sealed class Document : IDocument
     {
         /// <summary>
-        /// Gets or sets the dictionary.
-        /// </summary>
-        /// <value>The dictionary.</value>
-        [NotNull]
-        private IDictionary Dictionary { get; set; }
-
-        /// <summary>
         /// Gets or sets the observations.
         /// </summary>
         /// <value>The observations.</value>
@@ -30,11 +23,9 @@ namespace widemeadows.MachineLearning.Classification.Training
         /// <summary>
         /// Initializes a new instance of the <see cref="Document"/> class.
         /// </summary>
-        /// <param name="dictionary">The dictionary.</param>
         /// <param name="observations">The observations.</param>
-        public Document([NotNull] IDictionary dictionary, [NotNull] IObservationSequence observations)
+        public Document([NotNull] IObservationSequence observations)
         {
-            Dictionary = dictionary;
             Observations = observations;
         }
 
@@ -46,32 +37,6 @@ namespace widemeadows.MachineLearning.Classification.Training
         public double GetFrequency([NotNull] IObservation observation)
         {
             return Observations.Count(o => o.Equals(observation));
-        }
-
-        /// <summary>
-        /// Gets the empirical probability that the <paramref name="observation"/> can be found in the document.
-        /// </summary>
-        /// <param name="observation">The observation.</param>
-        /// <returns>System.Double.</returns>
-        public double GetProbability([NotNull] IObservation observation)
-        {
-            return GetFrequency(observation) / Length;
-        }
-
-        /// <summary>
-        /// Gets the empirical probability that the <paramref name="observation" /> can be found in the document.
-        /// <para>
-        /// Laplace smoothing is applied with the strength <paramref name="alpha" />.
-        /// </para>
-        /// </summary>
-        /// <param name="observation">The observation.</param>
-        /// <param name="alpha">The alpha.</param>
-        /// <returns>System.Double.</returns>
-        public double GetProbability(IObservation observation, double alpha)
-        {
-            var frequency = GetFrequency(observation);
-            var vocabularySize = Dictionary.VocabularySize;
-            return (frequency + alpha) / (alpha * vocabularySize + Length);
         }
 
         /// <summary>

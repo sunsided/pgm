@@ -68,6 +68,7 @@
     <Compile Include="Observations\ObservationRegistry.cs" />
     <Compile Include="Registry.cs" />
     <Compile Include="Scores\ILogProbability.cs" />
+    <Compile Include="Scores\IProbabilityCalculator.cs" />
     <Compile Include="Scores\Probabilities\Combiners\EvidenceCombinerExtensions.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombinerFactory.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Scores\Probabilities\Probability.cs" />
     <Compile Include="Scores\Likelihoods\Likelihood.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scores\LaplaceSmoothingProbabilityCalculator.cs" />
     <Compile Include="Scores\ScoreBase.cs" />
     <Compile Include="Scores\ScoreCollection.cs" />
     <Compile Include="Scores\ScoreExtensions.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Training\Document.cs" />
     <Compile Include="Training\DocumentExtensions.cs" />
     <Compile Include="Training\IDictionary.cs" />
+    <Compile Include="Training\IDistinctObservationRegistry.cs" />
     <Compile Include="Training\IDocument.cs" />
     <Compile Include="Training\ILabeledDocument.cs" />
     <Compile Include="Training\ITrainingCorpus.cs" />

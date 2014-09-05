@@ -13,8 +13,12 @@ namespace widemeadows.MachineLearning.Classification
     {
         /// <summary>
         /// The entries
+        /// <para>
+        /// Overriding classes SHOULD NOT add to or remove from this
+        /// list directly. Access should only be used to iterate.
+        /// </para>
         /// </summary>
-        private readonly List<T> _entries;
+        protected readonly List<T> Entries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Registry{T}" /> class.
@@ -24,7 +28,7 @@ namespace widemeadows.MachineLearning.Classification
         public Registry(int capacity = 0)
         {
             if (capacity < 0) throw new ArgumentOutOfRangeException("capacity", capacity, "capacity is less than 0");
-            _entries = new List<T>(capacity);
+            Entries = new List<T>(capacity);
         }
         
         /// <summary>
@@ -35,7 +39,7 @@ namespace widemeadows.MachineLearning.Classification
         [NotNull]
         public T Add([NotNull] T entry)
         {
-            _entries.Add(entry);
+            Entries.Add(entry);
             return entry;
         }
 
@@ -48,7 +52,7 @@ namespace widemeadows.MachineLearning.Classification
         public TDerived Add<TDerived>([NotNull] TDerived entry)
             where TDerived: T
         {
-            _entries.Add(entry);
+            Entries.Add(entry);
             return entry;
         }
         
@@ -58,7 +62,7 @@ namespace widemeadows.MachineLearning.Classification
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _entries.GetEnumerator();
+            return Entries.GetEnumerator();
         }
 
         /// <summary>
@@ -74,7 +78,7 @@ namespace widemeadows.MachineLearning.Classification
         /// Gets the count.
         /// </summary>
         /// <value>The count.</value>
-        public int Count { get { return _entries.Count; } }
+        public int Count { get { return Entries.Count; } }
 
         /// <summary>
         /// Gets at.
@@ -85,8 +89,8 @@ namespace widemeadows.MachineLearning.Classification
         [NotNull]
         public T GetAt(int index)
         {
-            if (index < 0 || index >= _entries.Count) throw new ArgumentOutOfRangeException("index", "The index was out of range.");
-            return _entries[index];
+            if (index < 0 || index >= Entries.Count) throw new ArgumentOutOfRangeException("index", "The index was out of range.");
+            return Entries[index];
         }
 
         /// <summary>
