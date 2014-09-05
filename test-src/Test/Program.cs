@@ -1,14 +1,67 @@
-﻿using widemeadows.MachineLearning.Classification.Classifiers.Bayes;
+﻿using FluentAssertions;
+using widemeadows.MachineLearning.Classification.Classifiers.Bayes;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 using widemeadows.MachineLearning.Classification.Training;
 
-namespace Test
+namespace widemeadows.MachineLearning.Test
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            PangramExample();
+            DirectionExample();
+        }
+
+        /// <summary>
+        /// Direction Example
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private static void DirectionExample()
+        {
+            var labels = new LabelRegistry();
+            var corpora = new CorpusRegistry();
+
+            var corpus = corpora.Add(new TrainingCorpus(labels.Add(new NamedLabel("Left Half"))));
+            corpus.AddSequence("left".ToObservationSequence(BoundaryMode.NoBoundaries));
+            corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
+
+            corpus = corpora.Add(new TrainingCorpus(labels.Add(new NamedLabel("Right Half"))));
+            corpus.AddSequence("right".ToObservationSequence(BoundaryMode.NoBoundaries));
+            corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
+
+            var probabilityResolver = labels.GetEqualDistribution();
+            var evidenceCombinerFactory = NaiveEvidenceCombiner.Factory;
+
+            var classifier = new NaiveBayesClassifier(corpora, probabilityResolver, evidenceCombinerFactory);
+
+            // test the left side
+            var results = classifier.Classify("left".ToObservationSequence(BoundaryMode.NoBoundaries));
+            var bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Left Half", "because this is it.");
+            bestResult.Value.Should().BeApproximately(1.0D, 0.01D, "because this is a 100% match.");
+
+            // test the right side
+            results = classifier.Classify("right".ToObservationSequence(BoundaryMode.NoBoundaries));
+            bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Right Half", "because this is it.");
+            bestResult.Value.Should().BeApproximately(1.0D, 0.01D, "because this is a 100% match.");
+
+            // test the center
+            results = classifier.Classify("center".ToObservationSequence(BoundaryMode.NoBoundaries));
+            bestResult = results.BestScore;
+            foreach (var result in results)
+            {
+                result.Value.Should().Be(0.5, "because \"center\" appears in both sets");
+            }
+        }
+
+        /// <summary>
+        /// Pangram example
+        /// </summary>
+        private static void PangramExample()
         {
             var labels = new LabelRegistry();
             var corpora = new CorpusRegistry();
@@ -33,7 +86,9 @@ namespace Test
             var evidenceCombinerFactory = NaiveEvidenceCombiner.Factory;
 
             var classifier = new NaiveBayesClassifier(corpora, probabilityResolver, evidenceCombinerFactory);
-            var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
+            var results =
+                classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
+            var bestResult = results.BestScore;
         }
     }
 }
