@@ -42,7 +42,7 @@ namespace widemeadows.MachineLearning.Test
             corpus2.AddSequence("A very big box sailed up then whizzed quickly from Japan.".ToObservationSequence());
 
             var priorResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = LogEvidenceCombiner.Factory;
+            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
             var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora
@@ -84,7 +84,7 @@ namespace widemeadows.MachineLearning.Test
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
             var priorResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = LogEvidenceCombiner.Factory;
+            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
             var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora

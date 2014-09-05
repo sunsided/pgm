@@ -69,7 +69,6 @@
     <Compile Include="Registry.cs" />
     <Compile Include="Scores\ILogProbability.cs" />
     <Compile Include="Scores\IProbabilityCalculator.cs" />
-    <Compile Include="Scores\Probabilities\Combiners\LogEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\EvidenceCombinerExtensions.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombinerFactory.cs" />
