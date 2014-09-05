@@ -20,7 +20,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// The training corpora
         /// </summary>
         [NotNull]
-        private readonly ReadOnlyCollection<ITrainingCorpusAccess> _trainingCorpora;
+        private readonly IIndexedCollectionAccess<ITrainingCorpusAccess> _trainingCorpora;
 
         /// <summary>
         /// The prior resolver
@@ -40,7 +40,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="trainingCorpora">The training corpora.</param>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public NaiveBayesClassifier([NotNull] ReadOnlyCollection<ITrainingCorpusAccess> trainingCorpora, [NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
+        public NaiveBayesClassifier([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora, [NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
         {
             _trainingCorpora = trainingCorpora;
             _priorResolver = priorResolver;

@@ -17,7 +17,7 @@ namespace widemeadows.MachineLearning.Classification.Labels
         [NotNull]
         public static EqualDistributionProbability GetEqualDistribution([NotNull] this LabelRegistry registry)
         {
-            return new EqualDistributionProbability(registry.AsReadOnly());
+            return new EqualDistributionProbability(registry);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace widemeadows.MachineLearning.Classification.Labels
         public static EqualDistributionProbability GetEqualDistribution<T>([NotNull] this LabelRegistry<T> registry)
             where T: ILabel
         {
-            return new EqualDistributionProbability((IReadOnlyCollection<ILabel>) registry.AsReadOnly());
+            return new EqualDistributionProbability(registry);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 
 namespace widemeadows.MachineLearning.Classification
@@ -10,26 +9,13 @@ namespace widemeadows.MachineLearning.Classification
     /// Class Registry. This class cannot be inherited.
     /// </summary>
     /// <typeparam name="T">The type</typeparam>
-    public class Registry<T> : IEnumerable<T>
+    public class Registry<T> : IIndexedCollectionAccess<T>
     {
         /// <summary>
         /// The entries
         /// </summary>
         private readonly List<T> _entries = new List<T>();
-
-        /// <summary>
-        /// The read only collection
-        /// </summary>
-        private readonly Lazy<ReadOnlyCollection<T>> _readOnlyCollection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Registry{T}"/> class.
-        /// </summary>
-        public Registry()
-        {
-            _readOnlyCollection = new Lazy<ReadOnlyCollection<T>>(() => _entries.AsReadOnly());
-        }
-
+        
         /// <summary>
         /// Adds the specified entry.
         /// </summary>
@@ -54,28 +40,7 @@ namespace widemeadows.MachineLearning.Classification
             _entries.Add(entry);
             return entry;
         }
-
-        /// <summary>
-        /// Returns the contents as a read-only collection.
-        /// </summary>
-        /// <returns>ReadOnlyCollection&lt;T&gt;.</returns>
-        [NotNull]
-        public ReadOnlyCollection<T> AsReadOnly()
-        {
-            return _readOnlyCollection.Value;
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Registry{T}"/> to <see cref="ReadOnlyCollection{T}"/>.
-        /// </summary>
-        /// <param name="registry">The registry.</param>
-        /// <returns>The result of the conversion.</returns>
-        [NotNull]
-        public static implicit operator ReadOnlyCollection<T>(Registry<T> registry)
-        {
-            return registry.AsReadOnly();
-        }
-
+        
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
@@ -92,6 +57,27 @@ namespace widemeadows.MachineLearning.Classification
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <value>The count.</value>
+        public int Count { get { return _entries.Count; } }
+
+        /// <summary>
+        /// Gets the <see cref="T" /> at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>T.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;The index was out of range.</exception>
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= _entries.Count) throw new ArgumentOutOfRangeException("index", "The index was out of range.");
+                return _entries[index];
+            }
         }
     }
 }
