@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using widemeadows.MachineLearning.Classification.Classifiers.Bayes;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
@@ -49,13 +50,17 @@ namespace widemeadows.MachineLearning.Test
             var bestResult = results.BestScore;
             bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 1", "this class is more likely.");
 
-            results = classifier.Classify("The lazy major was fixing Cupid's broken quiver.".ToObservationSequence());
-            bestResult = results.BestScore;
-            bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 2", "this class is more likely.");
+            var results2 = classifier.Classify("The lazy major was fixing Cupid's broken quiver.".ToObservationSequence());
+            var bestResult2 = results2.BestScore;
+            bestResult2.Label.As<NamedLabel>().Name.Should().Be("Pangram 2", "this class is more likely.");
 
-            results = classifier.Classify("Pack my box with five gnomes jackets quiche.".ToObservationSequence());
-            bestResult = results.BestScore;
-            bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 2", "this class is more likely.");
+            var results3 = classifier.Classify("Pack my box with jinxed Lopez jackets quiche.".ToObservationSequence());
+            var bestResult3 = results3.BestScore;
+            bestResult3.Label.As<NamedLabel>().Name.Should().Be("Pangram 2", "this class is more likely.");
+
+            var results4 = classifier.Classify("This sentence isn't even close to appear in these training corpora.".ToObservationSequence());
+            results4.First().Value.Should().BeLessThan(0.5, "because this sentence is not in any way trained.");
+            results4.Last().Value.Should().BeLessThan(0.5, "because this sentence is not in any way trained.");
         }
 
 
