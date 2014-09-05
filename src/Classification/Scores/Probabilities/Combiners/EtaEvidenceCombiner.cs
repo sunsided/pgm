@@ -51,6 +51,18 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combin
         }
 
         /// <summary>
+        /// Aggregates the specified probability.
+        /// </summary>
+        /// <param name="p">The p.</param>
+        public void Combine(ILogProbability p)
+        {
+            var logProbability = p.Value;
+            var probability = Math.Exp(p.Value);
+
+            _eta += Math.Log(1.0D - probability) - logProbability;
+        }
+
+        /// <summary>
         /// Calculates the combined probability.
         /// </summary>
         /// <returns>IProbability.</returns>

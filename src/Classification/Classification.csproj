@@ -69,12 +69,15 @@
     <Compile Include="Registry.cs" />
     <Compile Include="Scores\ILogProbability.cs" />
     <Compile Include="Scores\IProbabilityCalculator.cs" />
+    <Compile Include="Scores\Probabilities\Combiners\LogEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\EvidenceCombinerExtensions.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombinerFactory.cs" />
     <Compile Include="Scores\Probabilities\Combiners\EtaEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\NaiveEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\ConditionalLogProbabilityOL.cs" />
+    <Compile Include="Scores\Probabilities\ConditionalLogProbabilityLO.cs" />
+    <Compile Include="Scores\Probabilities\LogProbabilityO.cs" />
     <Compile Include="Scores\Probabilities\JointLogProbabilityOL.cs" />
     <Compile Include="Scores\Probabilities\LogProbabilityL.cs" />
     <Compile Include="Scores\Probabilities\LogProbability.cs" />

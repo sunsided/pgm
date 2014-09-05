@@ -18,7 +18,7 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
         public LogProbability(double logProbability)
             : base(logProbability)
         {
-            if (Double.IsNaN(logProbability) || Double.IsInfinity(logProbability)) throw new NotFiniteNumberException("The log-probability must be a finite number in the range of 0 <= p <= 1.", logProbability);
+            if (Double.IsNaN(logProbability) || Double.IsInfinity(logProbability)) throw new NotFiniteNumberException("The log-probability must be a finite number.", logProbability);
         }
 
         /// <summary>

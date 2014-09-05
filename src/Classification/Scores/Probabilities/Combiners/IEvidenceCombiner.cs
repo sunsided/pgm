@@ -19,6 +19,12 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combin
         void Combine([NotNull] IProbability p);
 
         /// <summary>
+        /// Aggregates the specified log probability.
+        /// </summary>
+        /// <param name="p">The p.</param>
+        void Combine([NotNull] ILogProbability p);
+
+        /// <summary>
         /// Calculates the combined probability.
         /// </summary>
         /// <returns>IProbability.</returns>

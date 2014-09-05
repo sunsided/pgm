@@ -97,8 +97,8 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                     // this is done by summing over each log P(o|l,d)
                     foreach (var document in corpus)
                     {
-                        var probability = GetConditionalProbabilityOfObservationGivenLabel(observation, label, document);
-                        observationLogProbabilitiesPerLabel[key] += Math.Log(probability.Value);
+                        var logProbability = GetConditionalLogProbabilityOfObservationGivenLabel(observation, label, document);
+                        observationLogProbabilitiesPerLabel[key] += logProbability.Value;
                     }
                 }
 
@@ -167,7 +167,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             var evidenceCombiners = EvidenceCombiner.CreateMany(labelCount);
 
             // prepare the joint probability array
-            var jointProbabilities = new JointProbabilityOL[labelCount];
+            var jointLogProbabilities = new JointLogProbabilityOL[labelCount];
 
             // iterate over each observation o in the document d
             foreach (var observation in observations)
@@ -177,20 +177,20 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                 {
                     var corpus = TrainingCorpora[c];
                     var label = corpus.Label;
-                    jointProbabilities[c] = GetJointProbabilityGivenObservation(observation, label, corpus);
+                    jointLogProbabilities[c] = GetJointProbabilityGivenObservation(observation, label, corpus);
                 }
 
                 // calculate total probability P(o)
-                var totalProbability = jointProbabilities.Sum(x => x.Value).AsProbability(observation);
+                var totalProbability = Math.Log(jointLogProbabilities.Sum(x => Math.Exp(x.Value))).AsLogProbability(observation);
 
                 // calculate the posterior P(c|o)
                 for (int c = 0; c < labelCount; ++c)
                 {
-                    var jointProbability = jointProbabilities[c];
-                    var probability = GetPosteriorGivenJointProbability(jointProbability, totalProbability);
+                    var jointLogProbability = jointLogProbabilities[c];
+                    var logPosterior = GetLogPosteriorGivenJointProbability(jointLogProbability, totalProbability);
 
                     // combine the evidence
-                    evidenceCombiners[c].Combine(probability);
+                    evidenceCombiners[c].Combine(logPosterior);
                 }
             }
 
@@ -214,35 +214,21 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
         [NotNull]
-        protected JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        protected JointLogProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
             var lookup = _jointLogProbabilitiesPerLabel;
 
             // lookup the probability
             var key = new LabeledObservationKey(label, observation);
             JointLogProbabilityOL logProbability;
-            if (lookup.TryGetValue(key, out logProbability)) return logProbability.ToJointProbability();
+            if (lookup.TryGetValue(key, out logProbability)) return logProbability;
 
             // that's a mismatch, so get funky using math
-            var probability = GetJointProbabilityGivenObservationUncached(observation, label, documents);
-            return probability;
+            var po = GetConditionalLogProbabilityOfObservationGivenLabel(observation, label, documents);
+            var pc = PriorResolver.GetPriorLogProbability(label);
+            return po + pc;
         }
-
-        /// <summary>
-        /// Calculates the joint probability <c>P(o,c) = P(o|c) * P(c)</c>.
-        /// </summary>
-        /// <param name="observation">The observation.</param>
-        /// <param name="label">The label.</param>
-        /// <param name="documents">The documents.</param>
-        /// <returns>ILikelihood.</returns>
-        [NotNull]
-        protected virtual JointProbabilityOL GetJointProbabilityGivenObservationUncached([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
-        {
-            var po = GetConditionalProbabilityOfObservationGivenLabel(observation, label, documents);
-            var pc = PriorResolver.GetPriorProbability(label);
-            return po * pc;
-        }
-
+        
         /// <summary>
         /// Gets the conditional probability of observation given label.
         /// </summary>
@@ -251,7 +237,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The sequence of all documents.</param>
         /// <returns>ConditionalProbabilityOL.</returns>
         [NotNull]
-        protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        protected virtual ConditionalLogProbabilityOL GetConditionalLogProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
 #if false
             // Option 1: regular, naive combination of probabilities by multiplication. 
@@ -264,12 +250,12 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             // this method efficiently counters floating-point underflow due to machine precision.
 
             // exploits the fact that a*b = log(a)+log(b)
-            var probability = documents.LogMul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
+            var logProbability = documents.Sum(document => GetConditionalLogProbabilityOfObservationGivenLabel(observation, label, document).Value);
 
 #endif
 
             // returnify
-            return new ConditionalProbabilityOL(probability, observation, label);
+            return new ConditionalLogProbabilityOL(logProbability, observation, label);
         }
 
         /// <summary>
@@ -280,25 +266,25 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="document">The document.</param>
         /// <returns>ConditionalProbabilityOL.</returns>
         [NotNull]
-        protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IDocument document)
+        protected virtual ConditionalLogProbabilityOL GetConditionalLogProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IDocument document)
         {
             var frequency = document.GetFrequency(observation);
             var documentLength = document.Length;
 
             var p = ProbabilityCalculator.GetProbability(frequency, documentLength, LaplaceSmoothing);
-            return new ConditionalProbabilityOL(p, observation, label);
+            return new ConditionalLogProbabilityOL(Math.Log(p), observation, label);
         }
 
-        // <summary>
+        /// <summary>
         /// Gets the posterior <c>P(c|d)</c> given the joint probability <c>P(c,d)</c>.
         /// </summary>
         /// <param name="jointProbability">The joint probability.</param>
         /// <param name="totalProbability">The total probability.</param>
         /// <returns>IProbability.</returns>
         [NotNull, Pure]
-        protected static ConditionalProbabilityLO GetPosteriorGivenJointProbability([NotNull] JointProbabilityOL jointProbability, [NotNull] ProbabilityO totalProbability)
+        protected static ConditionalLogProbabilityLO GetLogPosteriorGivenJointProbability([NotNull] JointLogProbabilityOL jointProbability, [NotNull] LogProbabilityO totalProbability)
         {
-            return jointProbability / totalProbability;
+            return jointProbability - totalProbability;
         }
     }
 }

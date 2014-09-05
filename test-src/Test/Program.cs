@@ -42,7 +42,7 @@ namespace widemeadows.MachineLearning.Test
             corpus2.AddSequence("A very big box sailed up then whizzed quickly from Japan.".ToObservationSequence());
 
             var priorResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
+            var evidenceCombinerFactory = LogEvidenceCombiner.Factory;
             var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora
@@ -84,7 +84,7 @@ namespace widemeadows.MachineLearning.Test
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
             var priorResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
+            var evidenceCombinerFactory = LogEvidenceCombiner.Factory;
             var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora
@@ -108,7 +108,7 @@ namespace widemeadows.MachineLearning.Test
             bestResult = results.BestScore;
             foreach (var result in results)
             {
-                result.Value.Should().Be(0.5, "because \"center\" appears in both sets");
+                result.Value.Should().BeApproximately(0.5, 0.0001D, "because \"center\" appears in both sets");
             }
         }
     }

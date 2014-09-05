@@ -47,10 +47,24 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combin
         /// Aggregates the specified probability.
         /// </summary>
         /// <param name="p">The p.</param>
-        public void Combine([NotNull] IProbability p)
+        public void Combine(IProbability p)
         {
-            _term1 += p.Value;
-            _term2 += (1.0D - p.Value);
+            var value = p.Value;
+
+            _term1 *= value;
+            _term2 *= (1.0D - value);
+        }
+
+        /// <summary>
+        /// Aggregates the specified probability.
+        /// </summary>
+        /// <param name="p">The p.</param>
+        public void Combine(ILogProbability p)
+        {
+            var value = Math.Exp(p.Value);
+
+            _term1 *= value;
+            _term2 *= (1.0D - value);
         }
 
         /// <summary>

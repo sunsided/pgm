@@ -36,6 +36,18 @@ namespace widemeadows.MachineLearning.Classification.Scores
         /// Gets the <paramref name="value" /> as a <see cref="Probability" />
         /// </summary>
         /// <param name="value">The value.</param>
+        /// <param name="observation">The observation.</param>
+        /// <returns>Probability.</returns>
+        [NotNull]
+        public static LogProbabilityO AsLogProbability(this double value, [NotNull] IObservation observation)
+        {
+            return new LogProbabilityO(value, observation);
+        }
+
+        /// <summary>
+        /// Gets the <paramref name="value" /> as a <see cref="Probability" />
+        /// </summary>
+        /// <param name="value">The value.</param>
         /// <param name="label">The label.</param>
         /// <returns>Probability.</returns>
         [NotNull]

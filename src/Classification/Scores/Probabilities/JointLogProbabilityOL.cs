@@ -52,5 +52,19 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
         {
             return new JointProbabilityOL(Math.Exp(Value), Observation, Label);
         }
+
+        /// <summary>
+        /// Implements the -.
+        /// </summary>
+        /// <param name="cplo">The cplo.</param>
+        /// <param name="co">The co.</param>
+        /// <returns>The result of the operator.</returns>
+        public static ConditionalLogProbabilityLO operator -(JointLogProbabilityOL cplo, LogProbabilityO co)
+        {
+            Debug.Assert(cplo.Observation.Equals(co.Observation), "Both probabilities must refer to the same observation.");
+
+            var p = cplo.Value - co.Value;
+            return new ConditionalLogProbabilityLO(p, cplo.Label, co.Observation);
+        }
     }
 }
