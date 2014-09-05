@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 
-namespace widemeadows.MachineLearning.Classification.Scores
+namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
 {
     /// <summary>
     /// Class Probability.

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using widemeadows.MachineLearning.Classification.Scores;
+using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
 namespace widemeadows.MachineLearning.Classification.Tests.Scores
 {

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
+namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners
 {
     /// <summary>
     /// Interface IEvidenceCombiner

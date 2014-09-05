@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
+namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners
 {
     /// <summary>
-    /// Class EtaEvidenceCombiner.
-    /// <para>
-    /// Combines evidence in a logarithmic manner.
-    /// </para>
+    /// Class EvidenceCombiner.
     /// </summary>
-    public sealed class EtaEvidenceCombiner : IEvidenceCombiner
+    public sealed class NaiveEvidenceCombiner : IEvidenceCombiner
     {
         /// <summary>
-        /// Prevents a default instance of the <see cref="EtaEvidenceCombiner"/> class from being created.
+        /// Prevents a default instance of the <see cref="NaiveEvidenceCombiner"/> class from being created.
         /// </summary>
-        private EtaEvidenceCombiner() { }
+        private NaiveEvidenceCombiner() {}
 
         /// <summary>
         /// The default factory, lazy-evaluated
@@ -30,25 +26,31 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
         public static IEvidenceCombinerFactory Factory { get { return DefaultFactoryLazy.Value; } }
 
         /// <summary>
-        /// The eta term
+        /// The 1st term, used for numerator and denominator
         /// </summary>
-        private double _eta;
+        private double _term1;
+
+        /// <summary>
+        /// The 2nd term, used for the denominator
+        /// </summary>
+        private double _term2;
 
         /// <summary>
         /// Resets this instance.
         /// </summary>
         public void Reset()
         {
-            _eta = 0;
+            _term1 = _term2 = 0;
         }
 
         /// <summary>
         /// Aggregates the specified probability.
         /// </summary>
         /// <param name="p">The p.</param>
-        public void Combine(IProbability p)
+        public void Combine([NotNull] IProbability p)
         {
-            _eta += Math.Log(1.0D - p.Value) - Math.Log(p.Value);
+            _term1 += p.Value;
+            _term2 += (1.0D - p.Value);
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
         [NotNull]
         public IProbability Calculate()
         {
-            return new Probability(1.0D/(1.0D+Math.Exp(_eta)));
+            return new Probability(_term1/(_term1 + _term2));
         }
 
         /// <summary>
@@ -72,22 +74,7 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
             /// <returns>IEvidenceCombiner.</returns>
             public IEvidenceCombiner Create()
             {
-                return new EtaEvidenceCombiner();
-            }
-
-            /// <summary>
-            /// Creates many combiners.
-            /// </summary>
-            /// <param name="count">The count.</param>
-            /// <returns>IList{IEvidenceCombiner}.</returns>
-            public IList<IEvidenceCombiner> CreateMany(int count)
-            {
-                var array = new IEvidenceCombiner[count];
-                for (int i = 0; i < count; ++i)
-                {
-                    array[i] = Create();
-                }
-                return array;
+                return new NaiveEvidenceCombiner();
             }
         }
     }
