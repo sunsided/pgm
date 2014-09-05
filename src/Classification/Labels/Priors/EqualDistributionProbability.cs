@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Scores.LogProbabilities;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
 namespace widemeadows.MachineLearning.Classification.Labels.Priors

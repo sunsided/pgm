@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using JetBrains.Annotations;
-using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
+using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
-namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
+namespace widemeadows.MachineLearning.Classification.Scores.LogProbabilities
 {
     /// <summary>
     /// Class LogProbabilityO.

@@ -6,8 +6,9 @@ using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
 using widemeadows.MachineLearning.Classification.Scores;
+using widemeadows.MachineLearning.Classification.Scores.Combiners;
+using widemeadows.MachineLearning.Classification.Scores.LogProbabilities;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
-using widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners;
 using widemeadows.MachineLearning.Classification.Training;
 
 namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes

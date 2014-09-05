@@ -1,7 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
-namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners
+namespace widemeadows.MachineLearning.Classification.Scores.Combiners
 {
     /// <summary>
     /// Class EvidenceCombiner.

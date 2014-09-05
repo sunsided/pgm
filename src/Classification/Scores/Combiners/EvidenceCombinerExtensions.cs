@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners
+namespace widemeadows.MachineLearning.Classification.Scores.Combiners
 {
     /// <summary>
     /// Class EvidenceCombinerExtensions.

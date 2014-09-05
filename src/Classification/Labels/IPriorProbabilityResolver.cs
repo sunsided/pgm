@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Scores.LogProbabilities;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
 namespace widemeadows.MachineLearning.Classification.Labels

@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
 using widemeadows.MachineLearning.Classification.Scores.Likelihoods;
+using widemeadows.MachineLearning.Classification.Scores.LogProbabilities;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
 namespace widemeadows.MachineLearning.Classification.Scores
