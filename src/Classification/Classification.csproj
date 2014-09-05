@@ -54,6 +54,7 @@
     <Compile Include="Labels\LabelRegistry.cs" />
     <Compile Include="Labels\NamedLabel.cs" />
     <Compile Include="Labels\ProbabilityResolverExtensions.cs" />
+    <Compile Include="LinqExtensions.cs" />
     <Compile Include="Observations\BoundaryMode.cs" />
     <Compile Include="Observations\BoundaryObservation.cs" />
     <Compile Include="Observations\BoundaryType.cs" />

@@ -127,12 +127,23 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         [NotNull]
         private ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
-            var product = 1.0D;
-            foreach (var document in documents)
-            {
-                product *= GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value;
-            }
-            return new ConditionalProbabilityOL(product, observation, label);
+#if false
+            // Option 1: regular, naive combination of probabilities by multiplication. 
+            // Note that since all probabilities are significantly smaller than one, this value exponentially tends to it's limit at zero.
+
+            var probability = documents.Mul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
+
+#else
+            // Option 2: logarithmic combination of probabilities. While being computationally more expensive,
+            // this method efficiently counters floating-point underflow due to machine precision.
+
+            // exploits the fact that a*b = log(a)+log(b)
+            var probability = documents.LogMul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
+
+#endif
+
+            // returnify
+            return new ConditionalProbabilityOL(probability, observation, label);
         }
 
         /// <summary>

@@ -87,8 +87,7 @@ namespace widemeadows.MachineLearning.Test
             var evidenceCombinerFactory = NaiveEvidenceCombiner.Factory;
 
             var classifier = new NaiveBayesClassifier(corpora, probabilityResolver, evidenceCombinerFactory);
-            var results =
-                classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
+            var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
             var bestResult = results.BestScore;
         }
     }
