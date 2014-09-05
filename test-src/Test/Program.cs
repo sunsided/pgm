@@ -22,14 +22,14 @@ namespace widemeadows.MachineLearning.Test
         /// <exception cref="System.NotImplementedException"></exception>
         private static void DirectionExample()
         {
-            var labels = new LabelRegistry();
+            var labels = new NamedLabelRegistry();
             var corpora = new CorpusRegistry();
 
-            var corpus = corpora.Add(new TrainingCorpus(labels.Add(new NamedLabel("Left Half"))));
+            var corpus = corpora.Add(new TrainingCorpus(labels.Add("Left Half")));
             corpus.AddSequence("left".ToObservationSequence(BoundaryMode.NoBoundaries));
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
-            corpus = corpora.Add(new TrainingCorpus(labels.Add(new NamedLabel("Right Half"))));
+            corpus = corpora.Add(new TrainingCorpus(labels.Add("Right Half")));
             corpus.AddSequence("right".ToObservationSequence(BoundaryMode.NoBoundaries));
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
@@ -64,10 +64,10 @@ namespace widemeadows.MachineLearning.Test
         /// </summary>
         private static void PangramExample()
         {
-            var labels = new LabelRegistry();
+            var labels = new NamedLabelRegistry();
             var corpora = new CorpusRegistry();
 
-            var corpus = corpora.Add(new TrainingCorpus(labels.Add(new NamedLabel("Pangram 1"))));
+            var corpus = corpora.Add(labels.Add("Pangram 1"));
             corpus.AddSequence("The quick brown fox jumped over the lazy dog.".ToObservationSequence());
             corpus.AddSequence("Waxy and quivering, jocks fumble the pizza.".ToObservationSequence());
             corpus.AddSequence("Foxy diva Jennifer Lopez wasn't baking my quiche.".ToObservationSequence());
@@ -75,7 +75,7 @@ namespace widemeadows.MachineLearning.Test
             corpus.AddSequence("Grumpy wizards make toxic brew for the evil queen and jack.".ToObservationSequence());
             corpus.AddSequence("The wizard quickly jinxed the gnomes before they vaporized.".ToObservationSequence());
 
-            corpus = corpora.Add(new TrainingCorpus(labels.Add(new NamedLabel("Pangram 2"))));
+            corpus = corpora.Add(labels.Add("Pangram 2"));
             corpus.AddSequence("A quick movement of the enemy will jeopardize six gunboats.".ToObservationSequence());
             corpus.AddSequence("The five boxing wizards jump quickly.".ToObservationSequence());
             corpus.AddSequence("Heavy boxes perform waltzes and jigs.".ToObservationSequence());
@@ -84,7 +84,7 @@ namespace widemeadows.MachineLearning.Test
             corpus.AddSequence("A very big box sailed up then whizzed quickly from Japan.".ToObservationSequence());
 
             var priorResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = NaiveEvidenceCombiner.Factory;
+            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
 
             var classifier = new NaiveBayesClassifier(corpora, priorResolver, evidenceCombinerFactory);
             var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Classifiers;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
@@ -33,6 +34,7 @@ namespace widemeadows.MachineLearning.Classification.Labels
         /// <exception cref="System.NotImplementedException"></exception>
         public ProbabilityL GetProbability(ILabel label)
         {
+            Debug.Assert(_labels.Count > 0, "Expected the number of labels to be greater than zero.");
             return new ProbabilityL(1.0D/_labels.Count, label);
         }
     }

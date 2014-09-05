@@ -100,6 +100,7 @@
     <Compile Include="Training\IDocument.cs" />
     <Compile Include="Training\ILabeledDocument.cs" />
     <Compile Include="Training\ITrainingCorpus.cs" />
+    <Compile Include="Training\ITrainingCorpusAccess.cs" />
     <Compile Include="Training\LabeledDocument.cs" />
     <Compile Include="Training\TrainingCorpus.cs" />
   </ItemGroup>

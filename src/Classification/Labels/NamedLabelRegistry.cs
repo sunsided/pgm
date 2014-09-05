@@ -28,9 +28,10 @@ namespace widemeadows.MachineLearning.Classification.Labels
         /// <param name="name">The name.</param>
         /// <returns>NamedLabel.</returns>
         [NotNull]
-        public NamedLabel Create([NotNull] string name)
+        public NamedLabel Add([NotNull] string name)
         {
-            return new NamedLabel(name, _stringComparisonType);
+            var label = new NamedLabel(name, _stringComparisonType);
+            return Add(label);
         }
     }
 }

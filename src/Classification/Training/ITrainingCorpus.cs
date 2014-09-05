@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
-using JetBrains.Annotations;
-using widemeadows.MachineLearning.Classification.Labels;
+﻿using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Observations;
 
 namespace widemeadows.MachineLearning.Classification.Training
 {
     /// <summary>
-    /// Interface ITrainingCorpus
+    /// Interface ITrainingCorpusRegistration
     /// </summary>
-    public interface ITrainingCorpus : IEnumerable<ILabeledDocument>
+    public interface ITrainingCorpus : ITrainingCorpusAccess
     {
         /// <summary>
-        /// Gets the label.
+        /// Adds the sequence.
         /// </summary>
-        /// <value>The label.</value>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns>IDocument{`1}.</returns>
         [NotNull]
-        ILabel Label { get; }
+        IDocument AddSequence([NotNull] IObservationSequence sequence);
     }
 }
