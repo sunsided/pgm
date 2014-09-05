@@ -7,7 +7,7 @@ namespace widemeadows.MachineLearning.Classification.Training
     /// <summary>
     /// Interface IDictionary
     /// </summary>
-    public interface IDictionary
+    public interface IDictionary : IIndexedCollectionAccess<ITrainingCorpusAccess>
     {
         /// <summary>
         /// Gets the size of the dictionary, i.e. the total count of 

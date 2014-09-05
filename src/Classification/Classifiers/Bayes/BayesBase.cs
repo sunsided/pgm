@@ -42,7 +42,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// Learns the posterior probabilities from specified training corpora.
         /// </summary>
         /// <param name="trainingCorpora">The training corpora.</param>
-        public virtual void Learn([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
+        public virtual void Learn([NotNull] IDictionary trainingCorpora)
         {
             _trainingCorpora = trainingCorpora;
             LearnInternal(trainingCorpora);
@@ -55,7 +55,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// </para>
         /// </summary>
         /// <param name="trainingCorpora">The training corpora.</param>
-        protected abstract void LearnInternal([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora);
+        protected abstract void LearnInternal([NotNull] IDictionary trainingCorpora);
 
         /// <summary>
         /// Gets or sets the Laplace smoothing strength.

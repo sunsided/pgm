@@ -61,7 +61,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// </para>
         /// </summary>
         /// <param name="trainingCorpora">The training corpora.</param>
-        protected override void LearnInternal(IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
+        protected override void LearnInternal(IDictionary trainingCorpora)
         {
             // this would be a good place to prepare a probability distribution
             // table, lookups, etc.

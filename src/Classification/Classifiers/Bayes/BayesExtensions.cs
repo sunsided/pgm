@@ -16,7 +16,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="trainingCorpora">The training corpora.</param>
         /// <returns>The classifier.</returns>
         [NotNull]
-        public static T TrainedWith<T>([NotNull] this T classifier, [NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
+        public static T TrainedWith<T>([NotNull] this T classifier, [NotNull] IDictionary trainingCorpora)
             where T : BayesBase
         {
             classifier.Learn(trainingCorpora);

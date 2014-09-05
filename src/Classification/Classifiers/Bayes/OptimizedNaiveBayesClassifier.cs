@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
@@ -46,7 +45,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// </para>
         /// </summary>
         /// <param name="trainingCorpora">The training corpora.</param>
-        protected override void LearnInternal(IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
+        protected override void LearnInternal(IDictionary trainingCorpora)
         {
             // determine all observations from the corpora
             var allObservations = DetermineObservations(trainingCorpora);
@@ -57,7 +56,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             var observationLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, ConditionalLogProbabilityOL>(capacity: observationCount);
 
             // the (summed) probabilities log P(o|l) of an observation given the label
-            var JointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>(capacity: classCount * observationCount);
+            var jointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>(capacity: classCount * observationCount);
 
             // iterate over all possible classes
             foreach (var corpus in trainingCorpora)
@@ -97,12 +96,12 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                     var jointLogProbability = logProbability + prior;
 
                     // add the probability
-                    JointLogProbabilitiesPerLabel.Add(key, jointLogProbability);
+                    jointLogProbabilitiesPerLabel.Add(key, jointLogProbability);
                 }
             }
 
             // swap references
-            _jointLogProbabilitiesPerLabel = JointLogProbabilitiesPerLabel;
+            _jointLogProbabilitiesPerLabel = jointLogProbabilitiesPerLabel;
         }
         
         /// <summary>
@@ -111,20 +110,9 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="trainingCorpora">The training corpora.</param>
         /// <returns>HashSet&lt;IObservation&gt;.</returns>
         [NotNull]
-        private static HashSet<IObservation> DetermineObservations([NotNull] IEnumerable<ITrainingCorpusAccess> trainingCorpora)
+        private static HashSet<IObservation> DetermineObservations([NotNull] IDictionary trainingCorpora)
         {
-            // iterate over all possible classes ... 
-            var allObservations = trainingCorpora.SelectMany(corpus => corpus)
-                .SelectMany(corpus => corpus)
-                .Select(observation => observation);
-
-            // ... and register observation as seen
-            var observations = new HashSet<IObservation>();
-            foreach (var observation in allObservations)
-            {
-                observations.Add(observation);
-            }
-            return observations;
+            return new HashSet<IObservation>(trainingCorpora.GetDistinctObservations().Select(pair => pair.Key));
         }
 
         /// <summary>
