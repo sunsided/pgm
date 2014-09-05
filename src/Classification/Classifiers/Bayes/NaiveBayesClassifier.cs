@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Emit;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
@@ -23,7 +22,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
     /// show the algorithm. A 
     /// </para>
     /// </summary>
-    public sealed class NaiveBayesClassifier : BayesBase, IClassifier<ITargetScoreCollection<ProbabilityL>>
+    public class NaiveBayesClassifier : BayesBase, IClassifier<ITargetScoreCollection<ProbabilityL>>
     {
         /// <summary>
         /// The prior resolver
@@ -36,19 +35,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// </summary>
         [NotNull]
         private readonly IEvidenceCombinerFactory _evidenceCombiner;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
-        /// </summary>
-        /// <param name="trainingCorpora">The training corpora.</param>
-        /// <param name="priorResolver">The prior probability resolver.</param>
-        /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public NaiveBayesClassifier([CanBeNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora, [NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
-            : this(priorResolver, evidenceCombiner)
-        {
-            if (trainingCorpora != null) Learn(trainingCorpora);
-        }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
         /// </summary>

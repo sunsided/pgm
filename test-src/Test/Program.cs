@@ -2,8 +2,6 @@
 using widemeadows.MachineLearning.Classification.Classifiers.Bayes;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
-using widemeadows.MachineLearning.Classification.Scores;
-using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities.Combiners;
 using widemeadows.MachineLearning.Classification.Training;
 
@@ -38,7 +36,8 @@ namespace widemeadows.MachineLearning.Test
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
 
             // fetch a new classifier and train it using the corpora
-            var classifier = new NaiveBayesClassifier(corpora, priorResolver, evidenceCombinerFactory);
+            var classifier = new NaiveBayesClassifier(priorResolver, evidenceCombinerFactory);
+            classifier.Learn(corpora);
 
             // test the left side
             var results = classifier.Classify("left".ToObservationSequence(BoundaryMode.NoBoundaries));
@@ -88,11 +87,8 @@ namespace widemeadows.MachineLearning.Test
             var priorResolver = labels.GetEqualDistribution();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
 
-            // fetch a new classifier
-            var classifier = new NaiveBayesClassifier(priorResolver, evidenceCombinerFactory);
-
-            // explicit call to Learn
-            classifier.Learn(corpora);
+            // fetch a new classifier and train it using the corpora
+            var classifier = new NaiveBayesClassifier(priorResolver, evidenceCombinerFactory).TrainedWith(corpora);
 
             var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
             var bestResult = results.BestScore;

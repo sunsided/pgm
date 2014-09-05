@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classifiers\Bayes\BayesBase.cs" />
+    <Compile Include="Classifiers\Bayes\BayesExtensions.cs" />
     <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\IClassifier.cs" />
     <Compile Include="IIndexedCollectionAccess.cs" />
