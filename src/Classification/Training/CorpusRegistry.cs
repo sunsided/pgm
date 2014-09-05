@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 
 namespace widemeadows.MachineLearning.Classification.Training
@@ -8,6 +10,18 @@ namespace widemeadows.MachineLearning.Classification.Training
     /// </summary>
     public sealed class CorpusRegistry : Registry<ITrainingCorpusAccess>
     {
+        /// <summary>
+        /// The lazily created empty collection
+        /// </summary>
+        private static readonly Lazy<CorpusRegistry> LazyEmpty = new Lazy<CorpusRegistry>(() => new CorpusRegistry());
+
+        /// <summary>
+        /// Gets the empty collection
+        /// </summary>
+        /// <value>The empty.</value>
+        [NotNull]
+        public static IIndexedCollectionAccess<ITrainingCorpusAccess> Empty { get { return LazyEmpty.Value; } }
+
         /// <summary>
         /// Adds and registers a new corpus.
         /// </summary>

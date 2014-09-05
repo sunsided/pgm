@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
@@ -13,15 +12,17 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
 {
     /// <summary>
     /// Class NaiveBayesClassifier. This class cannot be inherited.
+    /// <para>
+    /// This class implements a trivial (i.e. unoptimized) Naive Bayes classifier that
+    /// estimates the posteiror probability P(c|d) of a class given a document.
+    /// </para>
+    /// <para>
+    /// This code lacks speed and calculation optimizations in order to efficiently
+    /// show the algorithm. A 
+    /// </para>
     /// </summary>
     public sealed class NaiveBayesClassifier : BayesBase, IClassifier<ITargetScoreCollection<ProbabilityL>>
     {
-        /// <summary>
-        /// The training corpora
-        /// </summary>
-        [NotNull]
-        private readonly IIndexedCollectionAccess<ITrainingCorpusAccess> _trainingCorpora;
-
         /// <summary>
         /// The prior resolver
         /// </summary>
@@ -37,14 +38,27 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
         /// </summary>
-        /// <param name="trainingCorpora">The training corpora.</param>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public NaiveBayesClassifier([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora, [NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
+        public NaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
         {
-            _trainingCorpora = trainingCorpora;
             _priorResolver = priorResolver;
             _evidenceCombiner = evidenceCombiner;
+        }
+
+        /// <summary>
+        /// Learns the posterior probabilities from specified training corpora.
+        /// <para>
+        /// This method is called internally by <see cref="BayesBase.Learn" />.
+        /// </para>
+        /// </summary>
+        /// <param name="trainingCorpora">The training corpora.</param>
+        protected override void LearnInternal(IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
+        {
+            // this would be a good place to prepare a probability distribution
+            // table, lookups, etc.
+            // for the sake of simplicity of the algorithm below, this method is
+            // intentionally left empty here.
         }
 
         /// <summary>
@@ -72,7 +86,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             //
             // P(d) = P(d|c1)*P(c1) + P(d|c2)*P(c2) + ...
 
-            var labelCount = _trainingCorpora.Count;
+            var labelCount = TrainingCorpora.Count;
 
             // prepare the evidence combiners
             var evidenceCombiners = _evidenceCombiner.CreateMany(labelCount);
@@ -86,7 +100,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                 // calculate the joint probabilities P(o,c) for the observation o and each label c
                 for (int c = 0; c < labelCount; ++c)
                 {
-                    var corpus = _trainingCorpora[c];
+                    var corpus = TrainingCorpora[c];
                     var label = corpus.Label;
                     jointProbabilities[c] = GetJointProbabilityGivenObservation(observation, label, corpus);
                 }
@@ -109,7 +123,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             var scoreCollection = new MaximizationTargetScoreCollection<ProbabilityL>();
             for (int c = 0; c < labelCount; ++c)
             {
-                var label = _trainingCorpora[c].Label;
+                var label = TrainingCorpora[c].Label;
                 var probability = evidenceCombiners[c].Calculate();
                 scoreCollection.TryAdd(new ProbabilityL(probability.Value, label));
             }
@@ -163,8 +177,9 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <summary>
         /// Calculates the joint probability <c>P(o,c) = P(o|c) * P(c)</c>.
         /// </summary>
-        /// <param name="label">The label.</param>
         /// <param name="observation">The observation.</param>
+        /// <param name="label">The label.</param>
+        /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
         [NotNull]
         private JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
@@ -180,8 +195,8 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="jointProbability">The joint probability.</param>
         /// <param name="totalProbability">The total probability.</param>
         /// <returns>IProbability.</returns>
-        [NotNull]
-        private ConditionalProbabilityLO GetPosteriorGivenJointProbability([NotNull] JointProbabilityOL jointProbability, [NotNull] ProbabilityO totalProbability)
+        [NotNull, Pure]
+        private static ConditionalProbabilityLO GetPosteriorGivenJointProbability([NotNull] JointProbabilityOL jointProbability, [NotNull] ProbabilityO totalProbability)
         {
             return jointProbability/totalProbability;
         }

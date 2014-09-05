@@ -1,4 +1,6 @@
 ﻿using System;
+using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Training;
 
 namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
 {
@@ -16,6 +18,43 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// The _laplace smoothing
         /// </summary>
         private double _laplaceSmoothing = DefaultLaplaceSmoothing;
+
+        /// <summary>
+        /// The training corpora
+        /// </summary>
+        [CanBeNull]
+        private IIndexedCollectionAccess<ITrainingCorpusAccess> _trainingCorpora;
+
+        /// <summary>
+        /// The training corpora
+        /// </summary>
+        [NotNull]
+        protected IIndexedCollectionAccess<ITrainingCorpusAccess> TrainingCorpora
+        {
+            get
+            {
+                var corpora = _trainingCorpora;
+                return corpora ?? CorpusRegistry.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Learns the posterior probabilities from specified training corpora.
+        /// </summary>
+        /// <param name="trainingCorpora">The training corpora.</param>
+        public virtual void Learn([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
+        {
+            _trainingCorpora = trainingCorpora;
+        }
+
+        /// <summary>
+        /// Learns the posterior probabilities from specified training corpora.
+        /// <para>
+        /// This method is called internally by <see cref="BayesBase.Learn"/>.
+        /// </para>
+        /// </summary>
+        /// <param name="trainingCorpora">The training corpora.</param>
+        protected abstract void LearnInternal([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora);
 
         /// <summary>
         /// Gets or sets the Laplace smoothing strength.
