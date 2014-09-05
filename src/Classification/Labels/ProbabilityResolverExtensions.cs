@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Labels.Priors;
 
 namespace widemeadows.MachineLearning.Classification.Labels
 {

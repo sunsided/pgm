@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
@@ -27,7 +26,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// The prior resolver
         /// </summary>
         [NotNull]
-        private readonly IProbabilityResolver _priorResolver;
+        private readonly IPriorProbabilityResolver _priorResolver;
 
         /// <summary>
         /// The evidence combiner factory
@@ -41,7 +40,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="trainingCorpora">The training corpora.</param>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public NaiveBayesClassifier([NotNull] ReadOnlyCollection<ITrainingCorpusAccess> trainingCorpora, [NotNull] IProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
+        public NaiveBayesClassifier([NotNull] ReadOnlyCollection<ITrainingCorpusAccess> trainingCorpora, [NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
         {
             _trainingCorpora = trainingCorpora;
             _priorResolver = priorResolver;
@@ -95,7 +94,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                 // calculate total probability P(o)
                 var totalProbability = jointProbabilities.Sum(x => x.Value).AsProbability(observation);
 
-                // calculate the probabilities
+                // calculate the posterior P(c|o)
                 for (int c = 0; c < labelCount; ++c)
                 {
                     var jointProbability = jointProbabilities[c];
@@ -171,7 +170,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         private JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
             var po = GetConditionalProbabilityOfObservationGivenLabel(observation, label, documents);
-            var pc = _priorResolver.GetProbability(label);
+            var pc = _priorResolver.GetPriorProbability(label);
             return po*pc;
         }
 

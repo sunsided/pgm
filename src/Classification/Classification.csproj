@@ -42,8 +42,8 @@
     <Compile Include="Classifiers\Bayes\BayesBase.cs" />
     <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\IClassifier.cs" />
-    <Compile Include="Labels\EqualDistributionProbability.cs" />
-    <Compile Include="Labels\IProbabilityResolver.cs" />
+    <Compile Include="Labels\Priors\EqualDistributionProbability.cs" />
+    <Compile Include="Labels\IPriorProbabilityResolver.cs" />
     <Compile Include="Labels\ILabel.cs" />
     <Compile Include="Labels\INamedLabel.cs" />
     <Compile Include="Labels\LabelBase.cs" />

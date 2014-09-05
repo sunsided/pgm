@@ -4,9 +4,9 @@ using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 namespace widemeadows.MachineLearning.Classification.Labels
 {
     /// <summary>
-    /// Interface IProbabilityResolver
+    /// Interface IPriorProbabilityResolver
     /// </summary>
-    public interface IProbabilityResolver
+    public interface IPriorProbabilityResolver
     {
         /// <summary>
         /// Gets the a priori probability for the given label.
@@ -14,6 +14,6 @@ namespace widemeadows.MachineLearning.Classification.Labels
         /// <param name="label">The label.</param>
         /// <returns>System.Double.</returns>
         [NotNull]
-        ProbabilityL GetProbability([NotNull] ILabel label);
+        ProbabilityL GetPriorProbability([NotNull] ILabel label);
     }
 }
