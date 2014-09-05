@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels.Priors;
 
 namespace widemeadows.MachineLearning.Classification.Labels

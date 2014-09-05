@@ -26,7 +26,7 @@ namespace widemeadows.MachineLearning.Classification
             if (capacity < 0) throw new ArgumentOutOfRangeException("capacity", capacity, "capacity is less than 0");
             _entries = new List<T>(capacity);
         }
-
+        
         /// <summary>
         /// Adds the specified entry.
         /// </summary>
@@ -77,6 +77,19 @@ namespace widemeadows.MachineLearning.Classification
         public int Count { get { return _entries.Count; } }
 
         /// <summary>
+        /// Gets at.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>T.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;The index was out of range.</exception>
+        [NotNull]
+        public T GetAt(int index)
+        {
+            if (index < 0 || index >= _entries.Count) throw new ArgumentOutOfRangeException("index", "The index was out of range.");
+            return _entries[index];
+        }
+
+        /// <summary>
         /// Gets the <see cref="T" /> at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -84,11 +97,7 @@ namespace widemeadows.MachineLearning.Classification
         /// <exception cref="System.ArgumentOutOfRangeException">index;The index was out of range.</exception>
         public T this[int index]
         {
-            get
-            {
-                if (index < 0 || index >= _entries.Count) throw new ArgumentOutOfRangeException("index", "The index was out of range.");
-                return _entries[index];
-            }
+            get { return GetAt(index); }
         }
     }
 }

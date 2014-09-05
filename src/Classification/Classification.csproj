@@ -19,14 +19,9 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <!-- http://stackoverflow.com/questions/2923210/conditional-compilation-and-framework-targets -->
-    <DefineConstants Condition=" '$(TargetFrameworkVersion.Replace(&quot;v&quot;,&quot;&quot;))' &gt;= '4.0' ">NET_40_OR_GREATER</DefineConstants>
-    <DefineConstants Condition=" '$(TargetFrameworkVersion.Replace(&quot;v&quot;,&quot;&quot;))' &gt;= '4.5' ">NET_45_OR_GREATER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,7 +43,6 @@
     <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\IClassifier.cs" />
     <Compile Include="IIndexedCollectionAccess.cs" />
-    <Compile Include="IReadOnlyCollection.cs" />
     <Compile Include="Labels\Priors\EqualDistributionProbability.cs" />
     <Compile Include="Labels\IPriorProbabilityResolver.cs" />
     <Compile Include="Labels\ILabel.cs" />

@@ -8,7 +8,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
     /// Class BayesBase.
     /// </summary>
     public abstract class BayesBase
-    {
+    {    
         /// <summary>
         /// The default Laplace smoothing strength
         /// </summary>

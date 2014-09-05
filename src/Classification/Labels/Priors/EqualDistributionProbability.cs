@@ -14,13 +14,13 @@ namespace widemeadows.MachineLearning.Classification.Labels.Priors
         /// The labels
         /// </summary>
         [NotNull]
-        private readonly IReadOnlyCollection<ILabel> _labels;
+        private readonly IIndexedCollectionAccess<ILabel> _labels;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EqualDistributionProbability"/> class.
         /// </summary>
         /// <param name="labels">The labels.</param>
-        public EqualDistributionProbability([NotNull] IReadOnlyCollection<ILabel> labels)
+        public EqualDistributionProbability([NotNull] IIndexedCollectionAccess<ILabel> labels)
         {
             _labels = labels;
         }

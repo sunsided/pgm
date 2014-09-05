@@ -37,6 +37,7 @@ namespace widemeadows.MachineLearning.Test
             var priorResolver = labels.GetEqualDistribution();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
 
+            // fetch a new classifier and train it using the corpora
             var classifier = new NaiveBayesClassifier(corpora, priorResolver, evidenceCombinerFactory);
 
             // test the left side
@@ -87,9 +88,15 @@ namespace widemeadows.MachineLearning.Test
             var priorResolver = labels.GetEqualDistribution();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
 
-            var classifier = new NaiveBayesClassifier(corpora, priorResolver, evidenceCombinerFactory);
+            // fetch a new classifier
+            var classifier = new NaiveBayesClassifier(priorResolver, evidenceCombinerFactory);
+
+            // explicit call to Learn
+            classifier.Learn(corpora);
+
             var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
             var bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 1", "this class is more likely.");
         }
     }
 }

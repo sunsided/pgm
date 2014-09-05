@@ -6,7 +6,7 @@ namespace widemeadows.MachineLearning.Classification.Labels
     /// Class LabelRegistry.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LabelRegistry<T> : Registry<T>, IReadOnlyCollection<ILabel>
+    public class LabelRegistry<T> : Registry<T>, IIndexedCollectionAccess<ILabel>
         where T: ILabel
     {
         /// <summary>
@@ -19,6 +19,16 @@ namespace widemeadows.MachineLearning.Classification.Labels
             {
                 yield return label;
             }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ILabel"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>ILabel.</returns>
+        public new ILabel this[int index]
+        {
+            get { return GetAt(index); }
         }
     }
 
