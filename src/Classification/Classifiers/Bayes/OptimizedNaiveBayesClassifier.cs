@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
@@ -21,7 +22,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
     /// This code implementation label probabilities given each class.
     /// </para>
     /// </summary>
-    public class OptimizedNaiveBayesClassifier : NaiveBayesClassifier
+    public class OptimizedNaiveBayesClassifier : BayesBase, IClassifier<ITargetScoreCollection<ProbabilityL>>
     {
         /// <summary>
         /// The observation probabilities per document
@@ -29,13 +30,32 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         private Dictionary<LabeledObservationKey, JointLogProbabilityOL> _jointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>();
 
         /// <summary>
+        /// The prior resolver
+        /// </summary>
+        [NotNull]
+        protected readonly IPriorProbabilityResolver PriorResolver;
+
+        /// <summary>
+        /// The evidence combiner factory
+        /// </summary>
+        [NotNull]
+        protected readonly IEvidenceCombinerFactory EvidenceCombiner;
+
+        /// <summary>
+        /// The probability calculator
+        /// </summary>
+        protected readonly IProbabilityCalculator ProbabilityCalculator;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
         /// </summary>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
         public OptimizedNaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner, [NotNull] IProbabilityCalculator probabilityCalculator)
-            : base(priorResolver, evidenceCombiner, probabilityCalculator)
         {
+            PriorResolver = priorResolver;
+            EvidenceCombiner = evidenceCombiner;
+            ProbabilityCalculator = probabilityCalculator;
         }
 
         /// <summary>
@@ -116,13 +136,85 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         }
 
         /// <summary>
+        /// Classifies the specified observations.
+        /// </summary>
+        /// <param name="observations">The observations.</param>
+        /// <returns>IScoreCollection{IScore}.</returns>
+        public virtual ITargetScoreCollection<ProbabilityL> Classify(IObservationSequence observations)
+        {
+            // Given
+            // ============
+            //
+            // c = {c1, c2, ..., cN}    
+            // d = {o1, o2, ..., oM}    (document := all observations)
+
+            // Bayes' Theorem
+            // ========================
+            //
+            //            P(d|c1) * P(c1)
+            // P(c1|d) = -----------------
+            //                P(d)
+
+            // Law of total probability
+            // ==========================================
+            //
+            // P(d) = P(d|c1)*P(c1) + P(d|c2)*P(c2) + ...
+
+            var labelCount = TrainingCorpora.Count;
+            if (labelCount == 0) Trace.TraceWarning("The collection of training corpora was empty. Missed a call to Learn()?");
+
+            // prepare the evidence combiners
+            var evidenceCombiners = EvidenceCombiner.CreateMany(labelCount);
+
+            // prepare the joint probability array
+            var jointProbabilities = new JointProbabilityOL[labelCount];
+
+            // iterate over each observation o in the document d
+            foreach (var observation in observations)
+            {
+                // calculate the joint probabilities P(o,c) for the observation o and each label c
+                for (int c = 0; c < labelCount; ++c)
+                {
+                    var corpus = TrainingCorpora[c];
+                    var label = corpus.Label;
+                    jointProbabilities[c] = GetJointProbabilityGivenObservation(observation, label, corpus);
+                }
+
+                // calculate total probability P(o)
+                var totalProbability = jointProbabilities.Sum(x => x.Value).AsProbability(observation);
+
+                // calculate the posterior P(c|o)
+                for (int c = 0; c < labelCount; ++c)
+                {
+                    var jointProbability = jointProbabilities[c];
+                    var probability = GetPosteriorGivenJointProbability(jointProbability, totalProbability);
+
+                    // combine the evidence
+                    evidenceCombiners[c].Combine(probability);
+                }
+            }
+
+            // prepare the resulting score collection
+            var scoreCollection = new MaximizationTargetScoreCollection<ProbabilityL>();
+            for (int c = 0; c < labelCount; ++c)
+            {
+                var label = TrainingCorpora[c].Label;
+                var probability = evidenceCombiners[c].Calculate();
+                scoreCollection.TryAdd(new ProbabilityL(probability.Value, label));
+            }
+
+            return scoreCollection;
+        }
+
+        /// <summary>
         /// Calculates the joint probability <c>P(o,c) = P(o|c) * P(c)</c>.
         /// </summary>
         /// <param name="observation">The observation.</param>
         /// <param name="label">The label.</param>
         /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
-        protected override JointProbabilityOL GetJointProbabilityGivenObservation(IObservation observation, ILabel label, IEnumerable<ILabeledDocument> documents)
+        [NotNull]
+        protected JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
             var lookup = _jointLogProbabilitiesPerLabel;
 
@@ -144,9 +236,69 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
         [NotNull]
-        protected JointProbabilityOL GetJointProbabilityGivenObservationUncached([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        protected virtual JointProbabilityOL GetJointProbabilityGivenObservationUncached([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
-            return base.GetJointProbabilityGivenObservation(observation, label, documents);
+            var po = GetConditionalProbabilityOfObservationGivenLabel(observation, label, documents);
+            var pc = PriorResolver.GetPriorProbability(label);
+            return po * pc;
+        }
+
+        /// <summary>
+        /// Gets the conditional probability of observation given label.
+        /// </summary>
+        /// <param name="observation">The observation.</param>
+        /// <param name="label">The label.</param>
+        /// <param name="documents">The sequence of all documents.</param>
+        /// <returns>ConditionalProbabilityOL.</returns>
+        [NotNull]
+        protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        {
+#if false
+            // Option 1: regular, naive combination of probabilities by multiplication. 
+            // Note that since all probabilities are significantly smaller than one, this value exponentially tends to it's limit at zero.
+
+            var probability = documents.Mul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
+
+#else
+            // Option 2: logarithmic combination of probabilities. While being computationally more expensive,
+            // this method efficiently counters floating-point underflow due to machine precision.
+
+            // exploits the fact that a*b = log(a)+log(b)
+            var probability = documents.LogMul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
+
+#endif
+
+            // returnify
+            return new ConditionalProbabilityOL(probability, observation, label);
+        }
+
+        /// <summary>
+        /// Gets the conditional probability of observation given label.
+        /// </summary>
+        /// <param name="observation">The observation.</param>
+        /// <param name="label">The label.</param>
+        /// <param name="document">The document.</param>
+        /// <returns>ConditionalProbabilityOL.</returns>
+        [NotNull]
+        protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IDocument document)
+        {
+            var frequency = document.GetFrequency(observation);
+            var documentLength = document.Length;
+
+            var p = ProbabilityCalculator.GetProbability(frequency, documentLength, LaplaceSmoothing);
+            return new ConditionalProbabilityOL(p, observation, label);
+        }
+
+        // <summary>
+        /// Gets the posterior <c>P(c|d)</c> given the joint probability <c>P(c,d)</c>.
+        /// </summary>
+        /// <param name="jointProbability">The joint probability.</param>
+        /// <param name="totalProbability">The total probability.</param>
+        /// <returns>IProbability.</returns>
+        [NotNull, Pure]
+        protected static ConditionalProbabilityLO GetPosteriorGivenJointProbability([NotNull] JointProbabilityOL jointProbability, [NotNull] ProbabilityO totalProbability)
+        {
+            return jointProbability / totalProbability;
         }
     }
 }
