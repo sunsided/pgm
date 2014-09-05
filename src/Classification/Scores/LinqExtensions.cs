@@ -33,7 +33,7 @@ namespace widemeadows.MachineLearning.Classification.Scores
             while (enumerator.MoveNext())
             {
                 var item = enumerator.Current;
-                if (item.CompareTo(min) < 0) min = item;
+                if (item.CompareTo(min) <= 0) min = item;
                 if (item.CompareTo(max) > 0) max = item;
             }
             return true;

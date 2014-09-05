@@ -66,6 +66,7 @@
     <Compile Include="Registry.cs" />
     <Compile Include="Scores\Probabilities\IEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\IEvidenceCombinerFactory.cs" />
+    <Compile Include="Scores\Probabilities\EtaEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\NaiveEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\ProbabilityO.cs" />
     <Compile Include="Scores\Probabilities\ProbabilityL.cs" />
@@ -81,8 +82,8 @@
     <Compile Include="Scores\IScore.cs" />
     <Compile Include="Scores\MinimizationTargetScoreCollection.cs" />
     <Compile Include="Scores\MaximizationTargetScoreCollection.cs" />
-    <Compile Include="Scores\Probability.cs" />
-    <Compile Include="Scores\Likelihood.cs" />
+    <Compile Include="Scores\Probabilities\Probability.cs" />
+    <Compile Include="Scores\Likelihoods\Likelihood.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scores\ScoreBase.cs" />
     <Compile Include="Scores\ScoreCollection.cs" />

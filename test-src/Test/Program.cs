@@ -2,6 +2,7 @@
 using widemeadows.MachineLearning.Classification.Classifiers.Bayes;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
+using widemeadows.MachineLearning.Classification.Scores;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 using widemeadows.MachineLearning.Classification.Training;
 
@@ -33,7 +34,7 @@ namespace widemeadows.MachineLearning.Test
             corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
 
             var probabilityResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = NaiveEvidenceCombiner.Factory;
+            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
 
             var classifier = new NaiveBayesClassifier(corpora, probabilityResolver, evidenceCombinerFactory);
 
