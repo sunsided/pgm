@@ -28,23 +28,18 @@ namespace widemeadows.MachineLearning.Classification.Observations
             else
             {
                 yield return new BoundaryObservation(BoundaryType.SequenceStart);
+                yield return e.Current;
             }
 
             // emit all the symbols!
-            IObservation lastObservation;
-            do
+            var lastObservation = e.Current;
+            while (e.MoveNext())
             {
-                lastObservation = e.Current;
-                yield return lastObservation;
+                yield return lastObservation = e.Current;
             }
-            while (e.MoveNext());
 
             // emit stop boundary
-            if (lastObservation is BoundaryObservation)
-            {
-                yield break;
-            }
-            else
+            if (!(lastObservation is BoundaryObservation))
             {
                 yield return new BoundaryObservation(BoundaryType.SequenceEnd);
             }
