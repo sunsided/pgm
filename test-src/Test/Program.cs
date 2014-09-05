@@ -33,13 +33,13 @@ namespace widemeadows.MachineLearning.Test
             corpus.AddSequence("Grumpy wizards make toxic brew for the evil queen and jack.".ToObservationSequence());
             corpus.AddSequence("The wizard quickly jinxed the gnomes before they vaporized.".ToObservationSequence());
 
-            corpus = corpora.Add(labels.Add("Pangram 2"));
-            corpus.AddSequence("A quick movement of the enemy will jeopardize six gunboats.".ToObservationSequence());
-            corpus.AddSequence("The five boxing wizards jump quickly.".ToObservationSequence());
-            corpus.AddSequence("Heavy boxes perform waltzes and jigs.".ToObservationSequence());
-            corpus.AddSequence("Pack my box with five dozen liquor jugs.".ToObservationSequence());
-            corpus.AddSequence("The lazy major was fixing Cupid's broken quiver.".ToObservationSequence());
-            corpus.AddSequence("A very big box sailed up then whizzed quickly from Japan.".ToObservationSequence());
+            var corpus2 = corpora.Add(labels.Add("Pangram 2"));
+            corpus2.AddSequence("A quick movement of the enemy will jeopardize six gunboats.".ToObservationSequence());
+            corpus2.AddSequence("The five boxing wizards jump quickly.".ToObservationSequence());
+            corpus2.AddSequence("Heavy boxes perform waltzes and jigs.".ToObservationSequence());
+            corpus2.AddSequence("Pack my box with five dozen liquor jugs.".ToObservationSequence());
+            corpus2.AddSequence("The lazy major was fixing Cupid's broken quiver.".ToObservationSequence());
+            corpus2.AddSequence("A very big box sailed up then whizzed quickly from Japan.".ToObservationSequence());
 
             var priorResolver = labels.GetEqualDistribution();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
