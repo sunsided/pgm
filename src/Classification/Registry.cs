@@ -14,8 +14,19 @@ namespace widemeadows.MachineLearning.Classification
         /// <summary>
         /// The entries
         /// </summary>
-        private readonly List<T> _entries = new List<T>();
-        
+        private readonly List<T> _entries;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Registry{T}" /> class.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">capacity;capacity is less than 0</exception>
+        public Registry(int capacity = 0)
+        {
+            if (capacity < 0) throw new ArgumentOutOfRangeException("capacity", capacity, "capacity is less than 0");
+            _entries = new List<T>(capacity);
+        }
+
         /// <summary>
         /// Adds the specified entry.
         /// </summary>
