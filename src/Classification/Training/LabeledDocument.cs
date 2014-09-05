@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using JetBrains.Annotations;
@@ -13,7 +14,7 @@ namespace widemeadows.MachineLearning.Classification.Training
     ///  This class acts as a proxy between an existing document and a label.
     /// </para>
     /// </summary>
-    [DebuggerDisplay("Document of length {Length} for label {Label} ")]
+    [DebuggerDisplay("Document l={Length} for label {Label} ")]
     public sealed class LabeledDocument : ILabeledDocument
     {
         /// <summary>
@@ -122,7 +123,17 @@ namespace widemeadows.MachineLearning.Classification.Training
             if (ReferenceEquals(this, other)) return true;
             return _document.Equals(other);
         }
-        
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Document" /> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns><c>true</c> if the specified <see cref="Document" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        public bool Equals([CanBeNull] Document other)
+        {
+            return Equals((IDocument) other);
+        }
+
         /// <summary>
         /// Determines whether the specified <see cref="LabeledDocument" /> is equal to this instance.
         /// </summary>
@@ -157,6 +168,15 @@ namespace widemeadows.MachineLearning.Classification.Training
             {
                 return (_document.GetHashCode()*397) ^ Label.GetHashCode();
             }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return String.Format("doc (len={0}) in [{1}]", Length, Label);
         }
     }
 }

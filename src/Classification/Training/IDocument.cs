@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Observations;
 
@@ -7,8 +7,7 @@ namespace widemeadows.MachineLearning.Classification.Training
     /// <summary>
     /// Interface IDocument
     /// </summary>
-    /// <typeparam name="TObservation">The type of the observation.</typeparam>
-    public interface IDocument : IObservationSequence
+    public interface IDocument : IObservationSequence, IEquatable<IDocument>
     {
         /// <summary>
         /// Gets the number of times the <paramref name="observation"/> can be found in the document.

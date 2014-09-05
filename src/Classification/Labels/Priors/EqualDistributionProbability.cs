@@ -36,5 +36,15 @@ namespace widemeadows.MachineLearning.Classification.Labels.Priors
             Debug.Assert(_labels.Count > 0, "Expected the number of labels to be greater than zero.");
             return new ProbabilityL(1.0D/_labels.Count, label);
         }
+
+        /// <summary>
+        /// Gets the a priori log-probability for the given label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns>System.Double.</returns>
+        public LogProbabilityL GetPriorLogProbability(ILabel label)
+        {
+            return GetPriorProbability(label).ToLogProbability();
+        }
     }
 }

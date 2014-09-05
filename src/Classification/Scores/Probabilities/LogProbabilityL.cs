@@ -6,13 +6,13 @@ using widemeadows.MachineLearning.Classification.Labels;
 namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
 {
     /// <summary>
-    /// Class ProbabilityL.
+    /// Class LogProbabilityL.
     /// <para>
-    /// Describes the  probability <c>P(l)</c> of the label.
+    /// Describes the log probability <c>log P(l)</c> of the label.
     /// </para>
     /// </summary>
-    [DebuggerDisplay("P({Label})={Value}")]
-    public sealed class ProbabilityL : Probability
+    [DebuggerDisplay("log P({Label})={Value}")]
+    public sealed class LogProbabilityL : LogProbability
     {
         /// <summary>
         /// Gets or sets the  label.
@@ -24,22 +24,22 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
         /// <summary>
         /// Initializes a new instance of the <see cref="ProbabilityL" /> class.
         /// </summary>
-        /// <param name="probability">The probability.</param>
+        /// <param name="logProbability">The log probability.</param>
         /// <param name="label">The label.</param>
-        public ProbabilityL(double probability, [NotNull] ILabel label)
-            : base(probability)
+        public LogProbabilityL(double logProbability, [NotNull] ILabel label)
+            : base(logProbability)
         {
             Label = label;
         }
 
         /// <summary>
-        /// Converts this probability <c>P(l)</c> to a log probability <c>log P(l)</c>
+        /// Converts this log probability <c>log P(l)</c> to a probability <c>P(l)</c>
         /// </summary>
-        /// <returns>LogProbabilityL.</returns>
+        /// <returns>ProbabilityL.</returns>
         [NotNull]
-        public LogProbabilityL ToLogProbability()
+        public ProbabilityL ToProbability()
         {
-            return new LogProbabilityL(Math.Log(Value), Label);
+            return new ProbabilityL(Math.Exp(Value), Label);
         }
     }
 }

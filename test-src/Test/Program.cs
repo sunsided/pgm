@@ -16,51 +16,6 @@ namespace widemeadows.MachineLearning.Test
         }
 
         /// <summary>
-        /// Direction Example
-        /// </summary>
-        /// <exception cref="System.NotImplementedException"></exception>
-        private static void DirectionExample()
-        {
-            var labels = new NamedLabelRegistry();
-            var corpora = new CorpusRegistry();
-
-            var corpus = corpora.Add(new TrainingCorpus(labels.Add("Left Half")));
-            corpus.AddSequence("left".ToObservationSequence(BoundaryMode.NoBoundaries));
-            corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
-
-            corpus = corpora.Add(new TrainingCorpus(labels.Add("Right Half")));
-            corpus.AddSequence("right".ToObservationSequence(BoundaryMode.NoBoundaries));
-            corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
-
-            var priorResolver = labels.GetEqualDistribution();
-            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
-
-            // fetch a new classifier and train it using the corpora
-            var classifier = new NaiveBayesClassifier(priorResolver, evidenceCombinerFactory);
-            classifier.Learn(corpora);
-
-            // test the left side
-            var results = classifier.Classify("left".ToObservationSequence(BoundaryMode.NoBoundaries));
-            var bestResult = results.BestScore;
-            bestResult.Label.As<NamedLabel>().Name.Should().Be("Left Half", "because this is it.");
-            bestResult.Value.Should().BeApproximately(1.0D, 0.01D, "because this is a 100% match.");
-
-            // test the right side
-            results = classifier.Classify("right".ToObservationSequence(BoundaryMode.NoBoundaries));
-            bestResult = results.BestScore;
-            bestResult.Label.As<NamedLabel>().Name.Should().Be("Right Half", "because this is it.");
-            bestResult.Value.Should().BeApproximately(1.0D, 0.01D, "because this is a 100% match.");
-
-            // test the center
-            results = classifier.Classify("center".ToObservationSequence(BoundaryMode.NoBoundaries));
-            bestResult = results.BestScore;
-            foreach (var result in results)
-            {
-                result.Value.Should().Be(0.5, "because \"center\" appears in both sets");
-            }
-        }
-
-        /// <summary>
         /// Pangram example
         /// </summary>
         private static void PangramExample()
@@ -93,6 +48,60 @@ namespace widemeadows.MachineLearning.Test
             var results = classifier.Classify("My toxic grumpy girlfriend quickly jumped over the cheesy pizza".ToObservationSequence());
             var bestResult = results.BestScore;
             bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 1", "this class is more likely.");
+
+            results = classifier.Classify("The lazy major was fixing Cupid's broken quiver.".ToObservationSequence());
+            bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 2", "this class is more likely.");
+
+            results = classifier.Classify("Pack my box with five gnomes jackets quiche.".ToObservationSequence());
+            bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Pangram 2", "this class is more likely.");
+        }
+
+
+        /// <summary>
+        /// Direction Example
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private static void DirectionExample()
+        {
+            var labels = new NamedLabelRegistry();
+            var corpora = new CorpusRegistry();
+
+            var corpus = corpora.Add(new TrainingCorpus(labels.Add("Left Half")));
+            corpus.AddSequence("left".ToObservationSequence(BoundaryMode.NoBoundaries));
+            corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
+
+            corpus = corpora.Add(new TrainingCorpus(labels.Add("Right Half")));
+            corpus.AddSequence("right".ToObservationSequence(BoundaryMode.NoBoundaries));
+            corpus.AddSequence("center".ToObservationSequence(BoundaryMode.NoBoundaries));
+
+            var priorResolver = labels.GetEqualDistribution();
+            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
+
+            // fetch a new classifier and train it using the corpora
+            var classifier = new OptimizedNaiveBayesClassifier(priorResolver, evidenceCombinerFactory);
+            classifier.Learn(corpora);
+
+            // test the left side
+            var results = classifier.Classify("left".ToObservationSequence(BoundaryMode.NoBoundaries));
+            var bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Left Half", "because this is it.");
+            bestResult.Value.Should().BeApproximately(1.0D, 0.01D, "because this is a 100% match.");
+
+            // test the right side
+            results = classifier.Classify("right".ToObservationSequence(BoundaryMode.NoBoundaries));
+            bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("Right Half", "because this is it.");
+            bestResult.Value.Should().BeApproximately(1.0D, 0.01D, "because this is a 100% match.");
+
+            // test the center
+            results = classifier.Classify("center".ToObservationSequence(BoundaryMode.NoBoundaries));
+            bestResult = results.BestScore;
+            foreach (var result in results)
+            {
+                result.Value.Should().Be(0.5, "because \"center\" appears in both sets");
+            }
         }
     }
 }

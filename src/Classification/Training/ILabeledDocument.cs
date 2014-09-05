@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 
 namespace widemeadows.MachineLearning.Classification.Training
@@ -9,7 +10,7 @@ namespace widemeadows.MachineLearning.Classification.Training
     ///  This class acts as a proxy between an existing document and a label.
     /// </para>
     /// </summary>
-    public interface ILabeledDocument : IDocument
+    public interface ILabeledDocument : IDocument, IEquatable<ILabel>
     {
         /// <summary>
         /// The label

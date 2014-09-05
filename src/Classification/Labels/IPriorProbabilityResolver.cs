@@ -15,5 +15,13 @@ namespace widemeadows.MachineLearning.Classification.Labels
         /// <returns>System.Double.</returns>
         [NotNull]
         ProbabilityL GetPriorProbability([NotNull] ILabel label);
+
+        /// <summary>
+        /// Gets the a priori log-probability for the given label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns>System.Double.</returns>
+        [NotNull]
+        LogProbabilityL GetPriorLogProbability([NotNull] ILabel label);
     }
 }

@@ -45,6 +45,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         public virtual void Learn([NotNull] IIndexedCollectionAccess<ITrainingCorpusAccess> trainingCorpora)
         {
             _trainingCorpora = trainingCorpora;
+            LearnInternal(trainingCorpora);
         }
 
         /// <summary>

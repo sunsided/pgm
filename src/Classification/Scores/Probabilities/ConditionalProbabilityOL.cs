@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
@@ -43,6 +44,16 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
         }
 
         /// <summary>
+        /// Converts this P(o|l) to a probability log P(o|l)
+        /// </summary>
+        /// <returns>ConditionalProbabilityOL.</returns>
+        [NotNull]
+        public ConditionalLogProbabilityOL ToLogProbability()
+        {
+            return new ConditionalLogProbabilityOL(Math.Log(Value), Observation, GivenLabel);
+        }
+
+        /// <summary>
         /// Implements the *.
         /// </summary>
         /// <param name="cpol">The cpol.</param>
@@ -54,6 +65,17 @@ namespace widemeadows.MachineLearning.Classification.Scores.Probabilities
 
             var p = cpol.Value*cl.Value;
             return new JointProbabilityOL(p, cpol.Observation, cl.Label);
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="ConditionalProbabilityOL"/> to <see cref="ConditionalLogProbabilityOL"/>.
+        /// </summary>
+        /// <param name="p">The p.</param>
+        /// <returns>The result of the conversion.</returns>
+        [NotNull]
+        public static explicit operator ConditionalLogProbabilityOL([NotNull] ConditionalProbabilityOL p)
+        {
+            return p.ToLogProbability();
         }
     }
 }

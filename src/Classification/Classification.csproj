@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="11.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -41,6 +41,9 @@
   <ItemGroup>
     <Compile Include="Classifiers\Bayes\BayesBase.cs" />
     <Compile Include="Classifiers\Bayes\BayesExtensions.cs" />
+    <Compile Include="Classifiers\Bayes\LabeledObservationKey.cs" />
+    <Compile Include="Classifiers\Bayes\LabeledDocumentObservationKey.cs" />
+    <Compile Include="Classifiers\Bayes\OptimizedNaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\IClassifier.cs" />
     <Compile Include="IIndexedCollectionAccess.cs" />
@@ -64,11 +67,16 @@
     <Compile Include="Observations\StringObservationRegistry.cs" />
     <Compile Include="Observations\ObservationRegistry.cs" />
     <Compile Include="Registry.cs" />
+    <Compile Include="Scores\ILogProbability.cs" />
     <Compile Include="Scores\Probabilities\Combiners\EvidenceCombinerExtensions.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\IEvidenceCombinerFactory.cs" />
     <Compile Include="Scores\Probabilities\Combiners\EtaEvidenceCombiner.cs" />
     <Compile Include="Scores\Probabilities\Combiners\NaiveEvidenceCombiner.cs" />
+    <Compile Include="Scores\Probabilities\ConditionalLogProbabilityOL.cs" />
+    <Compile Include="Scores\Probabilities\JointLogProbabilityOL.cs" />
+    <Compile Include="Scores\Probabilities\LogProbabilityL.cs" />
+    <Compile Include="Scores\Probabilities\LogProbability.cs" />
     <Compile Include="Scores\Probabilities\ProbabilityO.cs" />
     <Compile Include="Scores\Probabilities\ProbabilityL.cs" />
     <Compile Include="Scores\Probabilities\ConditionalProbabilityLO.cs" />
@@ -96,6 +104,7 @@
     <Compile Include="Observations\StringObservation.cs" />
     <Compile Include="Training\CorpusRegistry.cs" />
     <Compile Include="Training\Document.cs" />
+    <Compile Include="Training\DocumentExtensions.cs" />
     <Compile Include="Training\IDictionary.cs" />
     <Compile Include="Training\IDocument.cs" />
     <Compile Include="Training\ILabeledDocument.cs" />

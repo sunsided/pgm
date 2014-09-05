@@ -28,13 +28,13 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// The prior resolver
         /// </summary>
         [NotNull]
-        private readonly IPriorProbabilityResolver _priorResolver;
+        protected readonly IPriorProbabilityResolver PriorResolver;
 
         /// <summary>
         /// The evidence combiner factory
         /// </summary>
         [NotNull]
-        private readonly IEvidenceCombinerFactory _evidenceCombiner;
+        protected readonly IEvidenceCombinerFactory EvidenceCombiner;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
@@ -43,8 +43,8 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="evidenceCombiner">The evidence combiner.</param>
         public NaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner)
         {
-            _priorResolver = priorResolver;
-            _evidenceCombiner = evidenceCombiner;
+            PriorResolver = priorResolver;
+            EvidenceCombiner = evidenceCombiner;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// </summary>
         /// <param name="observations">The observations.</param>
         /// <returns>IScoreCollection{IScore}.</returns>
-        public ITargetScoreCollection<ProbabilityL> Classify(IObservationSequence observations)
+        public virtual ITargetScoreCollection<ProbabilityL> Classify(IObservationSequence observations)
         {
             // Given
             // ============
@@ -91,7 +91,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             if (labelCount == 0) Trace.TraceWarning("The collection of training corpora was empty. Missed a call to Learn()?");
 
             // prepare the evidence combiners
-            var evidenceCombiners = _evidenceCombiner.CreateMany(labelCount);
+            var evidenceCombiners = EvidenceCombiner.CreateMany(labelCount);
 
             // prepare the joint probability array
             var jointProbabilities = new JointProbabilityOL[labelCount];
@@ -141,7 +141,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The sequence of all documents.</param>
         /// <returns>ConditionalProbabilityOL.</returns>
         [NotNull]
-        private ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
 #if false
             // Option 1: regular, naive combination of probabilities by multiplication. 
@@ -170,7 +170,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="document">The document.</param>
         /// <returns>ConditionalProbabilityOL.</returns>
         [NotNull]
-        private ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IDocument document)
+        protected virtual ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IDocument document)
         {
             var p = document.GetProbability(observation, LaplaceSmoothing);
             return new ConditionalProbabilityOL(p, observation, label);
@@ -184,10 +184,10 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
         [NotNull]
-        private JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        protected virtual JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
             var po = GetConditionalProbabilityOfObservationGivenLabel(observation, label, documents);
-            var pc = _priorResolver.GetPriorProbability(label);
+            var pc = PriorResolver.GetPriorProbability(label);
             return po*pc;
         }
 
@@ -198,7 +198,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="totalProbability">The total probability.</param>
         /// <returns>IProbability.</returns>
         [NotNull, Pure]
-        private static ConditionalProbabilityLO GetPosteriorGivenJointProbability([NotNull] JointProbabilityOL jointProbability, [NotNull] ProbabilityO totalProbability)
+        protected static ConditionalProbabilityLO GetPosteriorGivenJointProbability([NotNull] JointProbabilityOL jointProbability, [NotNull] ProbabilityO totalProbability)
         {
             return jointProbability/totalProbability;
         }
