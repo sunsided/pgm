@@ -147,22 +147,13 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The sequence of all documents.</param>
         /// <returns>ConditionalProbabilityOL.</returns>
         [NotNull]
-        private ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        private ConditionalProbabilityOL GetConditionalProbabilityOfObservationGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] ITrainingCorpusAccess documents)
         {
-#if false
-            // Option 1: regular, naive combination of probabilities by multiplication. 
-            // Note that since all probabilities are significantly smaller than one, this value exponentially tends to it's limit at zero.
+            // calculate the probability P(l|c) over all documents
+            var probability = documents.Sum(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
 
-            var probability = documents.Mul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
-
-#else
-            // Option 2: logarithmic combination of probabilities. While being computationally more expensive,
-            // this method efficiently counters floating-point underflow due to machine precision.
-
-            // exploits the fact that a*b = log(a)+log(b)
-            var probability = documents.LogMul(document => GetConditionalProbabilityOfObservationGivenLabel(observation, label, document).Value);
-
-#endif
+            // scale by the number of training documents
+            probability /= documents.DocumentCount;
 
             // returnify
             return new ConditionalProbabilityOL(probability, observation, label);
@@ -193,7 +184,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
         [NotNull]
-        private JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        private JointProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] ITrainingCorpusAccess documents)
         {
             var po = GetConditionalProbabilityOfObservationGivenLabel(observation, label, documents);
             var pc = _priorResolver.GetPriorProbability(label);
