@@ -43,6 +43,8 @@
     <Compile Include="Classifiers\Bayes\BayesExtensions.cs" />
     <Compile Include="Classifiers\Bayes\LabeledObservationKey.cs" />
     <Compile Include="Classifiers\Bayes\LabeledDocumentObservationKey.cs" />
+    <Compile Include="Classifiers\Bayes\NegationNaiveBayesClassifier.cs" />
+    <Compile Include="Classifiers\Bayes\OptimizedNaiveBayesClassifierBase.cs" />
     <Compile Include="Classifiers\Bayes\OptimizedNaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\IClassifier.cs" />
@@ -75,6 +77,8 @@
     <Compile Include="Scores\Combiners\IEvidenceCombinerFactory.cs" />
     <Compile Include="Scores\Combiners\EtaEvidenceCombiner.cs" />
     <Compile Include="Scores\Combiners\NaiveEvidenceCombiner.cs" />
+    <Compile Include="Scores\Likelihoods\LogLikelihoodL.cs" />
+    <Compile Include="Scores\Likelihoods\LikelihoodL.cs" />
     <Compile Include="Scores\LogProbabilities\ConditionalLogProbabilityOL.cs" />
     <Compile Include="Scores\LogProbabilities\ConditionalLogProbabilityLO.cs" />
     <Compile Include="Scores\LogProbabilities\LogProbabilityO.cs" />

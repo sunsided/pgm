@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
 using widemeadows.MachineLearning.Classification.Scores;
 using widemeadows.MachineLearning.Classification.Scores.Combiners;
+using widemeadows.MachineLearning.Classification.Scores.Likelihoods;
 using widemeadows.MachineLearning.Classification.Scores.LogProbabilities;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
+using widemeadows.MachineLearning.Classification.Training;
 
 namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
 {
@@ -20,24 +24,24 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
     /// This code implementation label probabilities given each class.
     /// </para>
     /// </summary>
-    public sealed class OptimizedNaiveBayesClassifier : OptimizedNaiveBayesClassifierBase, IClassifier<ITargetScoreCollection<ProbabilityL>>
+    public sealed class NegationNaiveBayesClassifier : OptimizedNaiveBayesClassifierBase, IClassifier<ITargetScoreCollection<LogLikelihoodL>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NaiveBayesClassifier" /> class.
         /// </summary>
         /// <param name="priorResolver">The prior probability resolver.</param>
         /// <param name="evidenceCombiner">The evidence combiner.</param>
-        public OptimizedNaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner, [NotNull] IProbabilityCalculator probabilityCalculator)
+        public NegationNaiveBayesClassifier([NotNull] IPriorProbabilityResolver priorResolver, [NotNull] IEvidenceCombinerFactory evidenceCombiner, [NotNull] IProbabilityCalculator probabilityCalculator)
             : base(priorResolver, evidenceCombiner, probabilityCalculator)
         {
         }
-
+        
         /// <summary>
         /// Classifies the specified observations.
         /// </summary>
         /// <param name="observations">The observations.</param>
         /// <returns>IScoreCollection{IScore}.</returns>
-        public ITargetScoreCollection<ProbabilityL> Classify(IObservationSequence observations)
+        public ITargetScoreCollection<LogLikelihoodL> Classify(IObservationSequence observations)
         {
             // Given
             // ============
@@ -79,6 +83,8 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
 
                 // TODO: Apply text-length normalization
 
+                // http://www.aclweb.org/anthology/R11-1083
+
                 // calculate total log probability log P(o)
                 // sadly this isn't the most performant operation in log domain due to the exponential function
                 // var totalLogProbability = Math.Log(jointLogProbabilities.Sum(x => Math.Exp(x.Value))).AsLogProbability(observation);
@@ -99,29 +105,29 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                 // calculate the posterior P(c|o)
                 for (int c = 0; c < labelCount; ++c)
                 {
-                    // get the prior probability
-                    var prior = GetLabelPriorLogProbability(c);
+                    // combine the probabilities from all labels except c
+                    for (int j = 0; j < labelCount; ++j)
+                    {
+                        if (j == c) continue;
 
-                    var conditionalLogProbability = conditionalLogProbabilities[c];
-                    var jointLogProbability = conditionalLogProbability + prior;
-
-                    var logPosterior = GetLogPosteriorGivenJointProbability(jointLogProbability, totalLogProbability);
-
-                    // combine the evidence
-                    evidenceCombiners[c].Combine(logPosterior);
+                        // combine the evidence
+                        var conditionalLogProbability = conditionalLogProbabilities[j] + GetLabelPriorLogProbability(j) - totalLogProbability;
+                        evidenceCombiners[c].Combine(conditionalLogProbability);
+                    }
                 }
             }
 
             // prepare the resulting score collection
-            var scoreCollection = new MaximizationTargetScoreCollection<ProbabilityL>();
+            var scoreCollection = new MinimizationTargetScoreCollection<LogLikelihoodL>();
             for (int c = 0; c < labelCount; ++c)
             {
                 var label = TrainingCorpora[c].Label;
-                var probability = evidenceCombiners[c].Calculate();
-                scoreCollection.TryAdd(new ProbabilityL(probability.Value, label));
+                var likelihood = evidenceCombiners[c].CalculateLog();
+                scoreCollection.TryAdd(new LogLikelihoodL(likelihood.Value, label));
             }
 
             return scoreCollection;
         }
+
     }
 }

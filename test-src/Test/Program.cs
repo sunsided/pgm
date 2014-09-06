@@ -49,7 +49,7 @@ namespace widemeadows.MachineLearning.Test
             var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
             // fetch a new classifier and train it using the corpora
-            var classifier = new OptimizedNaiveBayesClassifier(priorResolver, evidenceCombinerFactory, probabilityCalculator).TrainedWith(corpora);
+            var classifier = new NegationNaiveBayesClassifier(priorResolver, evidenceCombinerFactory, probabilityCalculator).TrainedWith(corpora);
 
             var results0 = classifier.Classify("The quick brown fox jumped over the lazy dog".ToObservationSequence());
             var bestResult0 = results0.BestScore;

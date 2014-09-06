@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Scores.Likelihoods;
 using widemeadows.MachineLearning.Classification.Scores.Probabilities;
 
 namespace widemeadows.MachineLearning.Classification.Scores.Combiners
@@ -71,6 +72,16 @@ namespace widemeadows.MachineLearning.Classification.Scores.Combiners
         public IProbability Calculate()
         {
             return new Probability(1.0D/(1.0D+Math.Exp(_eta)));
+        }
+
+        /// <summary>
+        /// Calculates the combined log probability.
+        /// </summary>
+        /// <returns>IProbability.</returns>
+        [NotNull]
+        public ILikelihood CalculateLog()
+        {
+            return new Likelihood(- Math.Log(1.0D + Math.Exp(_eta)));
         }
 
         /// <summary>

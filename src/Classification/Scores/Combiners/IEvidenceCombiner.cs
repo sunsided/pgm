@@ -30,5 +30,12 @@ namespace widemeadows.MachineLearning.Classification.Scores.Combiners
         /// <returns>IProbability.</returns>
         [NotNull]
         IProbability Calculate();
+
+        /// <summary>
+        /// Calculates the combined log probability.
+        /// </summary>
+        /// <returns>IProbability.</returns>
+        [NotNull]
+        ILikelihood CalculateLog();
     }
 }
