@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using widemeadows.MachineLearning.Classification.Labels;
 using widemeadows.MachineLearning.Classification.Observations;
 
 namespace widemeadows.MachineLearning.Classification.Training
@@ -9,6 +10,14 @@ namespace widemeadows.MachineLearning.Classification.Training
     /// </summary>
     public interface IDictionary : IIndexedCollectionAccess<ITrainingCorpusAccess>
     {
+        /// <summary>
+        /// Gets the <see cref="ITrainingCorpusAccess"/> with the specified label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns>ITrainingCorpusAccess.</returns>
+        [NotNull]
+        ITrainingCorpusAccess this[ILabel label] { get; }
+
         /// <summary>
         /// Gets the size of the dictionary, i.e. the total count of 
         /// all possible (distinct) observations.

@@ -31,6 +31,17 @@ namespace widemeadows.MachineLearning.Classification.Training
         private readonly ConcurrentDictionary<IObservation, long> _distinctObservations = new ConcurrentDictionary<IObservation, long>();
 
         /// <summary>
+        /// Gets the <see cref="ITrainingCorpusAccess"/> with the specified label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns>ITrainingCorpusAccess.</returns>
+        [NotNull]
+        public ITrainingCorpusAccess this[ILabel label]
+        {
+            get { return Entries.First(item => Equals(label, item.Label)); }
+        }
+
+        /// <summary>
         /// Adds and registers a new corpus.
         /// </summary>
         /// <param name="label">The label.</param>

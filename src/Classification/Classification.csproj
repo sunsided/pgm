@@ -47,6 +47,7 @@
     <Compile Include="Classifiers\Bayes\NaiveBayesClassifier.cs" />
     <Compile Include="Classifiers\IClassifier.cs" />
     <Compile Include="IIndexedCollectionAccess.cs" />
+    <Compile Include="Labels\Priors\DistributionFromVocabularySize.cs" />
     <Compile Include="Labels\Priors\EqualDistributionProbability.cs" />
     <Compile Include="Labels\IPriorProbabilityResolver.cs" />
     <Compile Include="Labels\ILabel.cs" />

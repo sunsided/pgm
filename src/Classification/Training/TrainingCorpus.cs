@@ -25,7 +25,12 @@ namespace widemeadows.MachineLearning.Classification.Training
         /// The document collection
         /// </summary>
         private readonly ConcurrentBag<IDocument> _documents = new ConcurrentBag<IDocument>();
-        
+
+        /// <summary>
+        /// The distinct observation dictionary tracking the counts
+        /// </summary>
+        private readonly ConcurrentDictionary<IObservation, long> _distinctObservations = new ConcurrentDictionary<IObservation, long>();
+
         /// <summary>
         /// The vocabulary size
         /// </summary>
@@ -37,7 +42,13 @@ namespace widemeadows.MachineLearning.Classification.Training
         /// </summary>
         /// <value>The size.</value>
         public long TotalDocumentLength { [Pure] get { return Interlocked.CompareExchange(ref _totalDocumentLength, 0, 0); } }
-        
+
+        /// <summary>
+        /// Gets the size of the set vocabulary.
+        /// </summary>
+        /// <value>The size of the set vocabulary.</value>
+        public long SetVocabularySize { get { return _distinctObservations.Count; } }
+
         /// <summary>
         /// Gets the document count.
         /// </summary>
@@ -84,10 +95,11 @@ namespace widemeadows.MachineLearning.Classification.Training
             foreach (var observation in document)
             {
                 _distinctRegistry.RegisterDistinctObservation(observation);
+                _distinctObservations.AddOrUpdate(observation, key => 1, (key, oldCount) => oldCount + 1);
                 Interlocked.Add(ref _totalDocumentLength, 1);
             }
         }
-
+        
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>

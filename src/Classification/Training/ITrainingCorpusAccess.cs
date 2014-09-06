@@ -28,5 +28,11 @@ namespace widemeadows.MachineLearning.Classification.Training
         /// </summary>
         /// <value>The size.</value>
         long TotalDocumentLength { [Pure] get; }
+
+        /// <summary>
+        /// Gets the size of the set vocabulary.
+        /// </summary>
+        /// <value>The size of the set vocabulary.</value>
+        long SetVocabularySize { get; }
     }
 }

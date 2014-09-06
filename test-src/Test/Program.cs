@@ -44,7 +44,7 @@ namespace widemeadows.MachineLearning.Test
             corpus3.AddSequence("The lazy major was fixing Cupid's broken quiver".ToObservationSequence());
             corpus3.AddSequence("A very big box sailed up then whizzed quickly from Japan".ToObservationSequence());
 
-            var priorResolver = labels.GetEqualDistribution();
+            var priorResolver = corpora.GetDistributionFromVocabularySize();
             var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
             var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
 
