@@ -20,7 +20,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
         [NotNull, DebuggerStepThrough]
         public static IObservationSequence ToObservationSequence([NotNull] this string sentence, BoundaryMode boundaryMode = BoundaryMode.AddBoundaries, StringComparison stringComparisonType = StringComparison.OrdinalIgnoreCase)
         {
-            var words = sentence.Split().Select(word => new StringObservation(word));
+            var words = sentence.Split().Select(CreateStringObservationFromWord);
 
             // add boundaries only if requested
             if (boundaryMode == BoundaryMode.AddBoundaries)
@@ -29,6 +29,17 @@ namespace widemeadows.MachineLearning.Classification.Observations
             }
             
             return new ObservationSequence(words);
+        }
+
+        /// <summary>
+        /// Creates the string observation from word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>Func{System.StringStringObservation}.</returns>
+        [NotNull, DebuggerStepThrough]
+        private static StringObservation CreateStringObservationFromWord([NotNull] string word)
+        {
+            return new StringObservation(word);
         }
     }
 }

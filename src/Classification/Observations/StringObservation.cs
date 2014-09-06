@@ -27,6 +27,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
         /// <param name="value">The value.</param>
         /// <param name="stringComparisonType">Type of the string comparison.</param>
         /// <exception cref="System.ArgumentNullException">value</exception>
+        [DebuggerStepThrough]
         public StringObservation([NotNull] string value, StringComparison stringComparisonType = StringComparison.OrdinalIgnoreCase)
         {
             _stringComparisonType = stringComparisonType;

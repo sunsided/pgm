@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using JetBrains.Annotations;
 using widemeadows.MachineLearning.Classification.Training;
 
@@ -42,7 +43,8 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// Learns the posterior probabilities from specified training corpora.
         /// </summary>
         /// <param name="trainingCorpora">The training corpora.</param>
-        public virtual void Learn([NotNull] IDictionary trainingCorpora)
+        [DebuggerStepThrough]
+        public void Learn([NotNull] IDictionary trainingCorpora)
         {
             _trainingCorpora = trainingCorpora;
             LearnInternal(trainingCorpora);
