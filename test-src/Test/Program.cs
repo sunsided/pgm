@@ -15,6 +15,7 @@ namespace widemeadows.MachineLearning.Test
         {
             PangramExample();
             DirectionExample();
+            SanFranciscoBostonExample();
         }
 
         /// <summary>
@@ -116,6 +117,42 @@ namespace widemeadows.MachineLearning.Test
             results = classifier.Classify("center".ToObservationSequence(BoundaryMode.NoBoundaries));
             results.BestScore.Value.Should().BeApproximately(0.5, 0.01D, "because \"center\" appears perfectly in the center set");
             results.Last().Value.Should().BeApproximately(0.25, 0.01D, "because \"center\" appears in both left and right sets");
+        }
+
+        /// <summary>
+        /// Direction Example
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private static void SanFranciscoBostonExample()
+        {
+            var labels = new NamedLabelRegistry();
+            var corpora = new CorpusRegistry();
+
+            const int count = 10;
+
+            var corpus = corpora.Add(labels.Add("San Francisco"));
+            for (int i = 0; i < count; ++i)
+            {
+                corpus.AddSequence("San Francisco".ToObservationSequence(BoundaryMode.NoBoundaries));
+            }
+
+            corpus = corpora.Add(labels.Add("Boston"));
+            for (int i = 0; i < count; ++i)
+            {
+                corpus.AddSequence("Boston".ToObservationSequence(BoundaryMode.NoBoundaries));
+            }
+            var priorResolver = labels.GetEqualDistribution();
+            var evidenceCombinerFactory = EtaEvidenceCombiner.Factory;
+            var probabilityCalculator = new LaplaceSmoothingProbabilityCalculator(corpora);
+
+            // fetch a new classifier and train it using the corpora
+            var classifier = new OptimizedNaiveBayesClassifier(priorResolver, evidenceCombinerFactory, probabilityCalculator);
+            classifier.Learn(corpora);
+
+            // test the left side
+            var results = classifier.Classify("San Francisco San Francisco San Francisco San Francisco Boston Boston Boston Boston Boston".ToObservationSequence(BoundaryMode.NoBoundaries));
+            var bestResult = results.BestScore;
+            bestResult.Label.As<NamedLabel>().Name.Should().Be("San Francisco", "because this the way Naive Bayes works.");
         }
     }
 }
