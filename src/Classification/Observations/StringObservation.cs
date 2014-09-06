@@ -85,7 +85,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return Value.ToLowerInvariant().GetHashCode();
         }
 
         /// <summary>

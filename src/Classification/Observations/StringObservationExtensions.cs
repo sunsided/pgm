@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -16,7 +17,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
         /// <param name="boundaryMode">The boundary mode.</param>
         /// <param name="stringComparisonType">Type of the string comparison.</param>
         /// <returns>IObservationSequence{StringObservation}.</returns>
-        [NotNull]
+        [NotNull, DebuggerStepThrough]
         public static IObservationSequence ToObservationSequence([NotNull] this string sentence, BoundaryMode boundaryMode = BoundaryMode.AddBoundaries, StringComparison stringComparisonType = StringComparison.OrdinalIgnoreCase)
         {
             var words = sentence.Split().Select(word => new StringObservation(word));

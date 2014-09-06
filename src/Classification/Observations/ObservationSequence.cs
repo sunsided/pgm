@@ -20,6 +20,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
         /// Initializes a new instance of the <see cref="ObservationSequence" /> class.
         /// </summary>
         /// <param name="observations">The observations.</param>
+        [DebuggerStepThrough]
         public ObservationSequence([CanBeNull] IEnumerable<IObservation> observations = null)
         {
             _sequence = observations == null

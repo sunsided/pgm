@@ -28,7 +28,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <summary>
         /// The observation probabilities per document
         /// </summary>
-        private Dictionary<LabeledObservationKey, JointLogProbabilityOL> _jointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>();
+        private Dictionary<LabeledObservationKey, ConditionalLogProbabilityOL> _conditionalLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, ConditionalLogProbabilityOL>();
 
         /// <summary>
         /// The prior resolver
@@ -73,56 +73,39 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             var observationCount = allObservations.Count;
             var classCount = trainingCorpora.Count;
 
-            // the (summed) logarithmic probabilities log P(o|l) of an observation given the label
-            var observationLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, ConditionalLogProbabilityOL>(capacity: observationCount);
-
             // the (summed) probabilities log P(o|l) of an observation given the label
-            var jointLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, JointLogProbabilityOL>(capacity: classCount * observationCount);
+            var conditionalLogProbabilitiesPerLabel = new Dictionary<LabeledObservationKey, ConditionalLogProbabilityOL>(capacity: classCount * observationCount);
 
             // iterate over all possible classes
             foreach (var corpus in trainingCorpora)
             {
                 var label = corpus.Label;
-
-                // start with a clean log-P dictionary
-                observationLogProbabilitiesPerLabel.Clear();
+                double weighting = Math.Log(corpus.DocumentCount);
 
                 // iterate over all observations
                 foreach (var observation in allObservations)
                 {
-                    // get the key and initialize the sum to zero
-                    var key = new LabeledObservationKey(label, observation);
-                    observationLogProbabilitiesPerLabel.Add(key, new ConditionalLogProbabilityOL(0, observation, label));
+                    // initialize the sum to zero
+                    var observationProbabilityGivenLabel = 0.0D;
 
-                    // calculate the probability P(o|l) of the observation by multiplying each P(o|l,d)
-                    // this is done by summing over each log P(o|l,d)
+                    // calculate the probability P(o|l) of the observation by adding each P(o|l,d)
                     foreach (var document in corpus)
                     {
                         var logProbability = GetConditionalLogProbabilityOfObservationGivenLabel(observation, label, document);
-                        observationLogProbabilitiesPerLabel[key] += logProbability.Value;
+                        observationProbabilityGivenLabel += Math.Exp(logProbability.Value);
                     }
-                }
 
-                // get the label's prior probability
-                var prior = PriorResolver.GetPriorLogProbability(label);
+                    // scale by number of documents
+                    var observationLogProbabilityGivenLabel = (Math.Log(observationProbabilityGivenLabel) - weighting).AsLogProbability(observation, given: label);
 
-                // iterate over each observation again and calculate
-                // P(o|l) = e^(log P(o|l))
-                foreach (var pair in observationLogProbabilitiesPerLabel)
-                {
-                    var key = pair.Key;
-                    var logProbability = pair.Value;
-                    
-                    // multiply with the label's a priori probability
-                    var jointLogProbability = logProbability + prior;
-
-                    // add the probability
-                    jointLogProbabilitiesPerLabel.Add(key, jointLogProbability);
+                    // store the conditional probability
+                    var key = new LabeledObservationKey(label, observation);
+                    conditionalLogProbabilitiesPerLabel.Add(key, observationLogProbabilityGivenLabel);
                 }
             }
 
             // swap references
-            _jointLogProbabilitiesPerLabel = jointLogProbabilitiesPerLabel;
+            _conditionalLogProbabilitiesPerLabel = conditionalLogProbabilitiesPerLabel;
         }
         
         /// <summary>
@@ -168,7 +151,7 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
             var evidenceCombiners = EvidenceCombiner.CreateMany(labelCount);
 
             // prepare the joint probability array
-            var jointLogProbabilities = new JointLogProbabilityOL[labelCount];
+            var conditionalLogProbabilities = new ConditionalLogProbabilityOL[labelCount];
 
             // iterate over each observation o in the document d
             foreach (var observation in observations)
@@ -178,17 +161,38 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
                 {
                     var corpus = TrainingCorpora[c];
                     var label = corpus.Label;
-                    jointLogProbabilities[c] = GetJointProbabilityGivenObservation(observation, label, corpus);
+                    conditionalLogProbabilities[c] = GetConditionalProbabilityGivenLabel(observation, label, corpus);
                 }
 
-                // calculate total probability P(o)
-                var totalProbability = Math.Log(jointLogProbabilities.Sum(x => Math.Exp(x.Value))).AsLogProbability(observation);
+                // TODO: Apply text-length normalization
+
+                // calculate total log probability log P(o)
+                // sadly this isn't the most performant operation in log domain due to the exponential function
+                // var totalLogProbability = Math.Log(jointLogProbabilities.Sum(x => Math.Exp(x.Value))).AsLogProbability(observation);
+                double totalProbability = 0.0D;
+                for (int c = 0; c < labelCount; ++c)
+                {
+                    // get the prior probability
+                    var prior = GetLabelPriorLogProbability(c);
+
+                    // sum over all P(o|l)*P(l)
+                    var jointLogProbability = conditionalLogProbabilities[c] + prior;
+                    totalProbability += Math.Exp(jointLogProbability.Value);
+                }
+
+                // fetch the log probability
+                var totalLogProbability = Math.Log(totalProbability).AsLogProbability(observation);
 
                 // calculate the posterior P(c|o)
                 for (int c = 0; c < labelCount; ++c)
                 {
-                    var jointLogProbability = jointLogProbabilities[c];
-                    var logPosterior = GetLogPosteriorGivenJointProbability(jointLogProbability, totalProbability);
+                    // get the prior probability
+                    var prior = GetLabelPriorLogProbability(c);
+
+                    var conditionalLogProbability = conditionalLogProbabilities[c];
+                    var jointLogProbability = conditionalLogProbability + prior;
+
+                    var logPosterior = GetLogPosteriorGivenJointProbability(jointLogProbability, totalLogProbability);
 
                     // combine the evidence
                     evidenceCombiners[c].Combine(logPosterior);
@@ -208,6 +212,20 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         }
 
         /// <summary>
+        /// Gets the label's prior log probability.
+        /// </summary>
+        /// <param name="c">The label index.</param>
+        /// <returns>LogProbabilityL.</returns>
+        [NotNull]
+        private LogProbabilityL GetLabelPriorLogProbability(int c)
+        {
+            var corpus = TrainingCorpora[c];
+            var label = corpus.Label;
+            var prior = PriorResolver.GetPriorLogProbability(label);
+            return prior;
+        }
+
+        /// <summary>
         /// Calculates the joint probability <c>P(o,c) = P(o|c) * P(c)</c>.
         /// </summary>
         /// <param name="observation">The observation.</param>
@@ -215,19 +233,17 @@ namespace widemeadows.MachineLearning.Classification.Classifiers.Bayes
         /// <param name="documents">The documents.</param>
         /// <returns>ILikelihood.</returns>
         [NotNull]
-        protected JointLogProbabilityOL GetJointProbabilityGivenObservation([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
+        protected ConditionalLogProbabilityOL GetConditionalProbabilityGivenLabel([NotNull] IObservation observation, [NotNull] ILabel label, [NotNull] IEnumerable<ILabeledDocument> documents)
         {
-            var lookup = _jointLogProbabilitiesPerLabel;
+            var lookup = _conditionalLogProbabilitiesPerLabel;
 
             // lookup the probability
             var key = new LabeledObservationKey(label, observation);
-            JointLogProbabilityOL logProbability;
+            ConditionalLogProbabilityOL logProbability;
             if (lookup.TryGetValue(key, out logProbability)) return logProbability;
 
             // that's a mismatch, so get funky using math
-            var po = GetConditionalLogProbabilityOfObservationGivenLabel(observation, label, documents);
-            var pc = PriorResolver.GetPriorLogProbability(label);
-            return po + pc;
+            return GetConditionalLogProbabilityOfObservationGivenLabel(observation, label, documents);
         }
         
         /// <summary>

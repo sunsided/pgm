@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -14,7 +15,7 @@ namespace widemeadows.MachineLearning.Classification.Observations
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <returns>IEnumerable{IObservation}.</returns>
-        [NotNull]
+        [NotNull, DebuggerStepThrough]
         public static IEnumerable<IObservation> WithBoundaries([NotNull] this IEnumerable<IObservation> sequence)
         {
             var e = sequence.GetEnumerator();
